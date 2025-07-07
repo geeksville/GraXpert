@@ -1,0 +1,56 @@
+{
+	"name": "graxpert-devcontainer",
+
+	"build": {
+		"dockerfile": "Dockerfile",
+		"args": {
+			"WORKSPACE": "${containerWorkspaceFolder}"
+		}
+	},
+	"postStartCommand": "bash .devcontainer/post-create.sh",
+	"runArgs": [
+		//"--privileged", // Allow full hw access from host
+		//"--network=host", // Use host network rather than our bridged container network
+
+		"--name=graxpert-devcontainer", // For easier management
+
+		"--user=1000:1000",
+		"--userns=keep-id:uid=1000,gid=1000"
+	],
+	"mounts": [
+		// Needed for x11 forwarding
+    	"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+		"source=/run/user/1000,target=/run/user/1000,type=bind"
+	],
+	"containerEnv": {
+		// Needed for X11 forwarding
+		"DISPLAY": "${localEnv:DISPLAY}",
+		"XAUTHORITY": "${localEnv:XAUTHORITY}"
+	},
+	"remoteUser": "vscode",
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"terminal.integrated.profiles.linux": {
+					"bash": {
+						"path": "bash"
+					}
+				},
+				"terminal.integrated.defaultProfile.linux": "bash",
+				"python": {
+					// "terminal.activateEnvInCurrentTerminal": "true",
+					// "defaultInterpreterPath": ".venv/bin/python"
+				}
+			},
+			"remote.extensionKind": {
+				"ms-azuretools.vscode-docker": ["ui"]
+				},
+			"extensions": [
+				"ms-azuretools.vscode-docker",
+				"ms-python.python",
+    			"ms-python.vscode-pylance",
+				"shardulm94.trailing-spaces"
+			]
+		}
+	}
+}
