@@ -7,7 +7,7 @@
 			"WORKSPACE": "${containerWorkspaceFolder}"
 		}
 	},
-	"postStartCommand": "bash .devcontainer/post-create.sh",
+	"postCreateCommand": "bash .devcontainer/post-create.sh",
 	"runArgs": [
 		//"--privileged", // Allow full hw access from host
 		//"--network=host", // Use host network rather than our bridged container network
@@ -20,7 +20,10 @@
 	"mounts": [
 		// Needed for x11 forwarding
     	"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
-		"source=/run/user/1000,target=/run/user/1000,type=bind"
+		"source=/run/user/1000,target=/run/user/1000,type=bind",
+
+		"source=${localEnv:HOME}/Pictures/telescope,target=/images,type=bind,consistency=cached"
+
 	],
 	"containerEnv": {
 		// Needed for X11 forwarding
