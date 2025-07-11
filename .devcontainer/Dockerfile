@@ -8,7 +8,10 @@ ARG USERNAME=vscode
 USER root
 
 RUN apt update
-RUN apt install -y libgl1-mesa-glx
+RUN apt install -y libgl1-mesa-glx 
+
+# extra packages needed for debugging native crashes in python
+# RUN apt install -y python3-venv python3-dbg python3-tk-dbg
 
 # Default user for devcontainer
 USER vscode
