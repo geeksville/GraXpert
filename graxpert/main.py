@@ -153,40 +153,44 @@ def ui_main(open_with_file=None):
 
     logging_thread = initialize_logging()
 
-    style()
-    root = CTk()
-
     try:
-        if "Linux" == platform.system():
-            root.attributes("-zoomed", True)
+        style()
+        root = CTk()
+
+        try:
+            if "Linux" == platform.system():
+                root.attributes("-zoomed", True)
+            else:
+                root.state("zoomed")
+        except Exception as e:
+            root.state("normal")
+            logging.warning(e, stack_info=True)
+
+        root.title("GraXpert | Release: '{}' ({})".format(release, version))
+        root.iconbitmap()
+        root.iconphoto(True, tk.PhotoImage(file=resource_path("img/Icon.png")))
+        # root.option_add("*TkFDialog*foreground", "black")
+        root.protocol("WM_DELETE_WINDOW", lambda: on_closing(root, logging_thread))
+        root.createcommand("::tk::mac::Quit", lambda: on_closing(root, logging_thread))
+        root.minsize(width=800, height=600)
+        root.columnconfigure(0, weight=1)
+        root.rowconfigure(0, weight=1)
+        app = ApplicationFrame(root)
+        app.grid(column=0, row=0, sticky=tk.NSEW)
+        root.update()
+        check_for_new_version()
+
+        if open_with_file and len(open_with_file) > 0:
+            eventbus.emit(AppEvents.LOAD_IMAGE_REQUEST, {"filename": open_with_file})
         else:
-            root.state("zoomed")
-    except Exception as e:
-        root.state("normal")
-        logging.warning(e, stack_info=True)
+            eventbus.emit(UiEvents.DISPLAY_START_BADGE_REQUEST)
 
-    root.title("GraXpert | Release: '{}' ({})".format(release, version))
-    root.iconbitmap()
-    root.iconphoto(True, tk.PhotoImage(file=resource_path("img/Icon.png")))
-    # root.option_add("*TkFDialog*foreground", "black")
-    root.protocol("WM_DELETE_WINDOW", lambda: on_closing(root, logging_thread))
-    root.createcommand("::tk::mac::Quit", lambda: on_closing(root, logging_thread))
-    root.minsize(width=800, height=600)
-    root.columnconfigure(0, weight=1)
-    root.rowconfigure(0, weight=1)
-    app = ApplicationFrame(root)
-    app.grid(column=0, row=0, sticky=tk.NSEW)
-    root.update()
-    check_for_new_version()
+        root.mainloop()
+    except tk.TclError as e:
+        logging.error("Error creating GUI, is your windowing system available? " + str(e))
+        sys.exit(1)
 
-    if open_with_file and len(open_with_file) > 0:
-        eventbus.emit(AppEvents.LOAD_IMAGE_REQUEST, {"filename": open_with_file})
-    else:
-        eventbus.emit(UiEvents.DISPLAY_START_BADGE_REQUEST)
-
-    root.mainloop()
-
-
+        messagebox.showerror(title=_("Error"), message=_("An error occurred while starting the GraXpert application. Please check the log for details."))
 def main():
     if len(sys.argv) > 1:
 
