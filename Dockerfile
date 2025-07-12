@@ -22,8 +22,11 @@ RUN apt install -y libgl1-mesa-glx
 # create working directory and 
 WORKDIR /app
 
-# Ensure /app is owned by the non-root user
-RUN chown $USERNAME:$USERNAME /app
+# The app will store prefs (and very large models) in this volume, which we'd prefer to be persistent
+VOLUME /home/$USERNAME/.local/share/GraXpert
+
+# Ensure /app and our prefs dir is owned by the non-root user
+RUN chown -R $USERNAME:$USERNAME /app /home/$USERNAME/.local
 
 # [Optional] Set the default user. Omit if you want to keep the default as root.
 USER $USERNAME
