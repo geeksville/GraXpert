@@ -24,6 +24,7 @@ WORKDIR /app
 
 # The app will store prefs (and very large models) in this volume, which we'd prefer to be persistent
 VOLUME /home/$USERNAME/.local/share/GraXpert
+VOLUME ["/data"]
 
 # Ensure /app and our prefs dir is owned by the non-root user
 RUN chown -R $USERNAME:$USERNAME /app /home/$USERNAME/.local
@@ -41,5 +42,10 @@ RUN pip3 install --user -r requirements.txt
 # Install AMD ROCm GPU support
 RUN pip3 install --user onnxruntime-rocm -f https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.1/
 
-# run the flask server  
-CMD [ "bash" ]
+# Launch the app with this as the current working directory
+WORKDIR /data
+
+# run the flask server
+ENV PYTHONPATH=/app
+ENTRYPOINT [ "python", "-m", "graxpert.main" ]
+CMD []
