@@ -180,6 +180,7 @@ def get_execution_providers_ordered(gpu_acceleration=True):
                     "device_type": "GPU",
                 },
             ),
+            "ROCMExecutionProvider",
             "DmlExecutionProvider",
             (
                 "CoreMLExecutionProvider",
@@ -194,11 +195,12 @@ def get_execution_providers_ordered(gpu_acceleration=True):
         supported_providers = ["CPUExecutionProvider"]
 
     result = []
+    available = ort.get_available_providers()
     for provider in supported_providers:
         if isinstance(provider, tuple):
-            if provider[0] in ort.get_available_providers():
+            if provider[0] in available:
                 result.append(provider)  # Append the entire tuple
         else:
-            if provider in ort.get_available_providers():
+            if provider in available:
                 result.append(provider)
     return result
