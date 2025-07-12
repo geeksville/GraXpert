@@ -25,8 +25,12 @@
     	"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
 		"source=/run/user/1000,target=/run/user/1000,type=bind",
 
-		"source=${localEnv:HOME}/Pictures/telescope,target=/images,type=bind,consistency=cached"
+		// It is handy to have some test images available in the container
+		"source=${localEnv:HOME}/Pictures/telescope,target=/images,type=bind,consistency=cached",
 
+		// The AI model files are quite large, so we use a volume to prevent refetching if we rebuild the container
+		// Also other user preferences are stored here
+		"source=graxpert-data,target=/home/vscode/.local/share/GraXpert,type=volume"
 	],
 	"containerEnv": {
 		// Needed for X11 forwarding

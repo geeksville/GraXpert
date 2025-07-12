@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -e
 
+# the devcontainer mount of vscode/.local/share implicity makes the owner root (which is bad)
+echo "Fixing permissions"
+sudo chown -R $USER ~/.local
+
 echo "Installing python requirements"
 pip3 install --user -r requirements.txt
 
