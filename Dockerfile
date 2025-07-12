@@ -45,7 +45,7 @@ RUN pip3 install --user onnxruntime-rocm -f https://repo.radeon.com/rocm/manylin
 # Launch the app with this as the current working directory
 WORKDIR /data
 
-# run the flask server
+# Run the app
 ENV PYTHONPATH=/app
 ENTRYPOINT [ "python", "-m", "graxpert.main" ]
 CMD []
