@@ -75,5 +75,15 @@ jobs:
       - name: Run tests
         run: python3 -m pytest --import-mode=append tests/
 
+  test-devcontainer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v3
 
-
+      - name: Run tests in dev container
+        uses: devcontainers/ci@v0.3
+        with:
+          runCmd: |
+            pip install --user pytest
+            python -m pytest --import-mode=append tests/
