@@ -2,6 +2,12 @@
 # FIXME try to find a slim version similar to 3.9.13-slim-buster
 FROM python:3.12-bookworm 
 
+# FIXME per https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#labelling-container-images
+#LABEL org.opencontainers.image.source=https://github.com/octocat/my-repo
+#LABEL org.opencontainers.image.description="My container image"
+#LABEL org.opencontainers.image.licenses=TBD
+# docker push ghcr.io/geeksville/graxpert:latest
+
 ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
