@@ -15,17 +15,22 @@
 
 		"--name=graxpert-devcontainer", // For easier management
 
-		"--user=1000:1000",
-		"--userns=keep-id:uid=1000,gid=1000",
+		"--user=1000:1000"
 
-		"--ulimit=core=-1:-1" // Allow core dumps
+		// Not allowed in github CI devcontainers
+		// "--userns=keep-id:uid=1000,gid=1000",
+
+		// Not needed for now
+		// "--ulimit=core=-1:-1" // Allow core dumps
 	],
 	"mounts": [
-		// Needed for x11 forwarding
-    	"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
-		"source=/run/user/1000,target=/run/user/1000,type=bind",
+		// Needed for x11 forwarding, but throws: invalid mount config for type "bind": bind source path does not exist: /run/user/1000
+		// on github CI.  So disable for now.
+    	//"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+		//"source=/run/user/1000,target=/run/user/1000,type=bind",
 
-		"source=${localEnv:HOME}/Pictures/telescope,target=/images,type=bind,consistency=cached"
+		// It is handy to have some test images available in the container
+		// "source=${localEnv:HOME}/Pictures/telescope,target=/images,type=bind,consistency=cached",
 
 	],
 	"containerEnv": {
