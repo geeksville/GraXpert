@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 set -e
 
+export USER=`whoami`
+
 # the devcontainer mount of vscode/.local/share implicity makes the owner root (which is bad)
 echo "Fixing permissions"
 sudo chown -R $USER ~/.local
