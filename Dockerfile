@@ -1,29 +1,26 @@
 # The dockerfile for building our release reference image
 # FIXME try to find a slim version similar to 3.9.13-slim-buster
-FROM python:3.12-bookworm 
+FROM python:3.12-slim-bookworm
 
-# FIXME per https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#labelling-container-images
-#LABEL org.opencontainers.image.source=https://github.com/octocat/my-repo
-#LABEL org.opencontainers.image.description="My container image"
-#LABEL org.opencontainers.image.licenses=TBD
-# docker push ghcr.io/geeksville/graxpert:latest
+# FIXME change source after merging per https://docs.github.com/en/packages/working-with-a-github-packages-registry/working-with-the-container-registry#labelling-container-images
+LABEL org.opencontainers.image.source=https://github.com/geeksville/GraXpert
+LABEL org.opencontainers.image.description="A container for running GraXpert, an astrophotography image processing tool"
+LABEL org.opencontainers.image.licenses=GPL-3.0
+# FIXME have github CI docker push ghcr.io/geeksville/graxpert:latest
 
 ARG USERNAME=vscode
 ARG USER_UID=1000
 ARG USER_GID=$USER_UID
 
-# Create the user
-#RUN groupadd --gid $USER_GID $USERNAME \
-#   && useradd --uid $USER_UID --gid $USER_GID -m $USERNAME \
-    #
-    # [Optional] Add sudo support. Omit if you don't need to install software after connecting.
-#    && apt-get update \
-#    && apt-get install -y sudo \
-#    && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME \
-#    && chmod 0440 /etc/sudoers.d/$USERNAME
-
 RUN apt update
-RUN apt install -y libgl1-mesa-glx 
+RUN apt install -y libgl1-mesa-glx wget sudo tk
+
+# Create a non-root user if one doesn't exist, and give it sudo rights
+RUN if ! id -u ${USERNAME} > /dev/null 2>&1; then \
+        groupadd --gid ${USER_GID} ${USERNAME} && \
+        useradd --uid ${USER_UID} --gid ${USER_GID} --create-home --shell /bin/bash ${USERNAME} && \
+        echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USERNAME}-nopasswd; \
+    fi
 
 # create working directory and 
 WORKDIR /app
@@ -43,15 +40,16 @@ USER $USERNAME
 COPY . .
 
 # install pip dependencies
-RUN pip3 install --user -r requirements.txt
+RUN pip3 install --no-cache-dir --user -r requirements.txt
 
 # Install AMD ROCm GPU support
-RUN pip3 install --user onnxruntime-rocm -f https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.1/
+RUN pip3 install --no-cache-dir --user onnxruntime-gpu
+RUN pip3 install --no-cache-dir --user onnxruntime-rocm -f https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.1/
 
 # Launch the app with this as the current working directory
 WORKDIR /data
 
-# Run the app
+# Run the app (for the time being we only allow the CLI - not the GUI)
 ENV PYTHONPATH=/app
-ENTRYPOINT [ "python", "-m", "graxpert.main" ]
+ENTRYPOINT [ "python", "-m", "graxpert.main", "--cli", "--help"]
 CMD []

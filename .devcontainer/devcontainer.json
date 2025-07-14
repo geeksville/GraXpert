@@ -38,8 +38,8 @@
 	],
 	"containerEnv": {
 		// Needed for X11 forwarding
-		"DISPLAY": "${localEnv:DISPLAY}",
-		"XAUTHORITY": "${localEnv:XAUTHORITY}",
+		//"DISPLAY": "${localEnv:DISPLAY}",
+		//"XAUTHORITY": "${localEnv:XAUTHORITY}",
 
 		"PYTHONDEVMODE": "1" // Enable Python dev mode for better debug output
 	},
