@@ -175,6 +175,7 @@ jobs:
           max_tries=10
           i=0
           until create-dmg \
+            --no-internet-enable \
             --volname "GraXpert-macos-arm64" \
             --window-pos 50 50 \
             --window-size 1920 1080 \
@@ -249,6 +250,7 @@ jobs:
           max_tries=10
           i=0
           until create-dmg \
+            --no-internet-enable \
             --volname "GraXpert-macos-x86_64" \
             --window-pos 50 50 \
             --window-size 1920 1080 \
