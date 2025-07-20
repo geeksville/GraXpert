@@ -54,7 +54,7 @@ jobs:
   #         retention-days: 5
 
   build-linux-zip:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
     steps:
       - name: setup python
         uses: actions/setup-python@v5
