@@ -74,7 +74,7 @@ jobs:
           echo "deconvolution_stars_bucket_name = \"$ai_s3_deconvolution_stars_bucket_name\"" >> ./graxpert/s3_secrets.py
       - name: install dependencies
         run: |
-          pip install --user setuptools wheel cx_freeze==7.2.3
+          pip install --user setuptools wheel cx_freeze==8.3.0
           pip install --user onnxruntime-gpu
           pip install --user -r requirements.txt
       - name: patch version
