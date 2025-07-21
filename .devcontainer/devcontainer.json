@@ -23,6 +23,11 @@
 		// Not needed for now
 		// "--ulimit=core=-1:-1" // Allow core dumps
 	],
+	"features": {
+		// Allow git use from inside container
+        "git": "os-provided"
+        // "sshd": "latest"
+    },
 	"mounts": [
 		// Needed for x11 forwarding, but throws: invalid mount config for type "bind": bind source path does not exist: /run/user/1000
 		// on github CI.  So disable for now.
