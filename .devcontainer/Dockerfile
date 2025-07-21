@@ -9,7 +9,7 @@ ARG USERNAME=vscode
 USER root
 
 RUN apt update
-RUN apt install -y libgl1-mesa-glx wget sudo git
+RUN apt install -y libgl1-mesa-glx wget sudo git patchelf
 
 # Create a non-root user if one doesn't exist, and give it sudo rights
 RUN if ! id -u ${USERNAME} > /dev/null 2>&1; then \
