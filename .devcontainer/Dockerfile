@@ -1,6 +1,6 @@
 # Run inside a recent debian based image with python3, pip3, git and sudo installed
 # We are careful to use the python 3.12 version, because the rocm precompiled python native code for onxruntime is only available for a few versions
-FROM python:3.12-slim-bookworm
+FROM python:3.12.11-slim-bookworm
 
 # We use 'user' as the name to match what the zhephyr-build image already created
 ARG USERNAME=vscode
@@ -23,8 +23,9 @@ RUN if ! id -u ${USERNAME} > /dev/null 2>&1; then \
 
 # Install and run AMD ROCm GPU support
 # per https://rocm.docs.amd.com/projects/radeon/en/latest/docs/install/native_linux/install-onnx.html
-RUN wget -P /tmp https://repo.radeon.com/amdgpu-install/6.4.1/ubuntu/jammy/amdgpu-install_6.4.60401-1_all.deb
-RUN apt install -y /tmp/amdgpu-install_6.4.60401-1_all.deb
+# and https://rocm.docs.amd.com/projects/install-on-linux/en/latest/install/quick-start.html
+RUN wget -P /tmp https://repo.radeon.com/amdgpu-install/6.4.3/ubuntu/jammy/amdgpu-install_6.4.60403-1_all.deb
+RUN apt install -y /tmp/amdgpu-install_6.4.60403-1_all.deb
 RUN apt update
 RUN apt install -y python3-setuptools python3-wheel
 # sudo usermod -a -G render,video $LOGNAME # Add the current user to the render and video groups

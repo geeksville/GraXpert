@@ -16,4 +16,4 @@ echo "Installing onnxruntime-gpu for NVIDIA GPU support"
 pip install --user onnxruntime-gpu
 
 echo "Installing onnxruntime-rocm for AMD GPU support"
-pip3 install --user onnxruntime-rocm -f https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.1/
+pip3 install --user onnxruntime-rocm -f https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.3/
