@@ -48,7 +48,7 @@ setup_options = {
 }
 
 # import cx_Freeze only when needed ---
-cx_freeze_commands = {'build_exe', 'bdist_msi', 'bdist_rpm'}
+cx_freeze_commands = {'build_exe', 'bdist_msi', 'bdist_rpm', 'bdist_appimage', 'bdist_deb', 'bdist_mac' }
 if cx_freeze_commands.intersection(sys.argv):
     import cx_Freeze
 
@@ -75,7 +75,22 @@ if cx_freeze_commands.intersection(sys.argv):
         "install_icon": "./img/Icon.ico",
     }
 
-    bidst_rpm_options = {"release": release, "vendor": "GraXpert Development Team <info@graxpert.com>", "group": "Unspecified"}
+    bdist_rpm_options = {
+        "release": release, 
+        "vendor": "GraXpert Development Team <info@graxpert.com>", 
+        "group": "Unspecified"}
+
+    bdist_appimage_options = {
+        "target_name": "GraXpert"
+    }
+
+    bdist_deb_options = {
+        # Not yet used
+    }
+
+    bdist_mac_options = {
+        # Not yet used
+    }
 
     build_options = {
         "includes": ["astropy.constants.codata2018", "astropy.constants.iau2015", "imageio.plugins.pillow", "skimage.draw.draw", "skimage.exposure.exposure", "skimage.filters._gaussian"],
@@ -92,14 +107,20 @@ if cx_freeze_commands.intersection(sys.argv):
 
     base = "Win32GUI" if sys.platform == "win32" else None
 
-    executables = [cx_Freeze.Executable("./graxpert/main.py", base=base, icon="./img/Icon.ico", target_name="GraXpert", shortcut_name="GraXpert {}".format(version), shortcut_dir="GraXpert")]
+    executables = [cx_Freeze.Executable("./graxpert/main.py", base=base, 
+                                        icon="./img/Icon", # leave off extension so it will be autocorrected for any OS
+                                        target_name="GraXpert", 
+                                        shortcut_name="GraXpert {}".format(version), shortcut_dir="GraXpert")]
 
     # Add the cx_Freeze options to the setup arguments dictionary
     setup_options['executables'] = executables
     setup_options['options'] = {
         "build_exe": build_options,
         "bdist_msi": bdist_msi_options,
-        "bdist_rpm": bidst_rpm_options
+        "bdist_rpm": bdist_rpm_options,
+        "bdist_appimage": bdist_appimage_options,
+        "bdist_deb": bdist_deb_options,
+        "bdist_mac": bdist_mac_options
     }
 
     cx_Freeze.setup(**setup_options)
