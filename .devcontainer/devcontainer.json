@@ -33,7 +33,7 @@
 
 		// The AI model files are quite large, so we use a volume to prevent refetching if we rebuild the container
 		// Also other user preferences are stored here
-		// "source=graxpert-data,target=/home/vscode/.local/share/GraXpert,type=volume",
+		"source=graxpert-data,target=/home/vscode/.local/share/GraXpert,type=volume"
 
 		// Needed for x11 forwarding, but throws: invalid mount config for type "bind": bind source path does not exist: /run/user/1000
 		// on github CI. 
