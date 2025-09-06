@@ -1,0 +1,12 @@
+[build-system]
+# These are the packages needed to build your project.
+# The build tool will install these BEFORE running setup.py
+requires = [
+    "setuptools>=42",
+    "wheel",
+    "astropy",
+    "cx_Freeze",
+    "imageio",
+    "scikit-image"
+]
+build-backend = "setuptools.build_meta"

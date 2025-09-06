@@ -12,3 +12,5 @@ scikit-image
 scipy
 xisf
 onnxruntime
+imageio
+scikit-image
