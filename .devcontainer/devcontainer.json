@@ -18,7 +18,7 @@
 		"--user=1000:1000"
 
 		// Not allowed in github CI devcontainers
-		// "--userns=keep-id:uid=1000,gid=1000",
+		"--userns=keep-id:uid=1000,gid=1000",
 
 		// Not needed for now
 		// "--ulimit=core=-1:-1" // Allow core dumps
@@ -31,15 +31,18 @@
 	"mounts": [
 		// Needed for x11 forwarding, but throws: invalid mount config for type "bind": bind source path does not exist: /run/user/1000
 		// on github CI.  So disable for now.
-    	//"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
-		//"source=/run/user/1000,target=/run/user/1000,type=bind",
+    		"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+		"source=/run/user/1000,target=/run/user/1000,type=bind",
 
 		// It is handy to have some test images available in the container
-		// "source=${localEnv:HOME}/Pictures/telescope,target=/images,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/Pictures/telescope,target=/images,type=bind,consistency=cached",
 
 		// The AI model files are quite large, so we use a volume to prevent refetching if we rebuild the container
 		// Also other user preferences are stored here
-		"source=graxpert-data,target=/home/vscode/.local/share/GraXpert,type=volume"
+		"source=graxpert-data,target=/home/vscode/.local/share/GraXpert,type=volume",
+
+		// This is necessary to prevent newer vscode created images from being able to write to /tmp
+		"type=tmpfs,destination=/tmp,tmpfs-mode=1777,exec"
 	],
 	"containerEnv": {
 		// Needed for X11 forwarding
