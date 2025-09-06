@@ -9,7 +9,7 @@ on:
 
 jobs: 
   test-linux:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: setup python
         uses: actions/setup-python@v2
@@ -33,7 +33,7 @@ jobs:
 
 
   test-windows:
-    runs-on: windows-latest
+    runs-on: windows-2025
     steps:
       - name: setup python
         uses: actions/setup-python@v2
@@ -58,11 +58,12 @@ jobs:
     steps:
       - name: checkout repository
         uses: actions/checkout@v3
-      - name: unbreak python in github actions
-        run: |
-         find /usr/local/bin -lname '*/Library/Frameworks/Python.framework/*' -delete
-         sudo rm -rf /Library/Frameworks/Python.framework/
-         brew install --force python3 && brew unlink python3 && brew unlink python3 && brew link --overwrite python3
+      # No longer needed on recent macos containers
+      # - name: unbreak python in github actions
+      #   run: |
+      #    find /usr/local/bin -lname '*/Library/Frameworks/Python.framework/*' -delete
+      #    sudo rm -rf /Library/Frameworks/Python.framework/
+      #    brew install --force python3 && brew unlink python3 && brew unlink python3 && brew link --overwrite python3
       - name: install dependencies
         run: |
           brew install python-tk && \
@@ -76,7 +77,7 @@ jobs:
         run: python3 -m pytest --import-mode=append tests/
 
   test-devcontainer:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # These permissions are needed to push the devcontainer image to the GitHub Container Registry
     permissions:
       contents: read
