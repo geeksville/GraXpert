@@ -27,7 +27,7 @@ RUN if ! id -u ${USERNAME} > /dev/null 2>&1; then \
 RUN wget -P /tmp https://repo.radeon.com/amdgpu-install/6.4.3/ubuntu/jammy/amdgpu-install_6.4.60403-1_all.deb
 RUN apt install -y /tmp/amdgpu-install_6.4.60403-1_all.deb
 RUN apt update
-RUN apt install -y python3-setuptools python3-wheel rpm
+RUN apt install -y python3-setuptools python3-wheel rpm alien
 # sudo usermod -a -G render,video $LOGNAME # Add the current user to the render and video groups
 RUN apt -y install rocm
 

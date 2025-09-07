@@ -24,7 +24,7 @@ def get_version_info():
 
     if version_match and release_match:
         return version_match.group(1), release_match.group(1)
-    
+
     raise RuntimeError("Unable to find version and release strings in graxpert/version.py.")
 
 version, release = get_version_info()
@@ -47,8 +47,8 @@ setup_options = {
     'install_requires': install_requires
 }
 
-# import cx_Freeze only when needed ---
-cx_freeze_commands = {'build_exe', 'bdist_msi', 'bdist_rpm', 'bdist_appimage', 'bdist_deb', 'bdist_mac' }
+# import cx_Freeze only when needed
+cx_freeze_commands = {'build_exe', 'bdist_msi', 'bdist_rpm', 'bdist_appimage', 'bdist_deb', 'bdist_mac', 'install' }
 if cx_freeze_commands.intersection(sys.argv):
     import cx_Freeze
 
@@ -75,17 +75,23 @@ if cx_freeze_commands.intersection(sys.argv):
         "install_icon": "./img/Icon.ico",
     }
 
+    # Not yet used, possibly never used if AppImage is sufficient
     bdist_rpm_options = {
-        "release": release, 
-        "vendor": "GraXpert Development Team <info@graxpert.com>", 
-        "group": "Unspecified"}
+        "release": release,
+        "vendor": "GraXpert Development Team <info@graxpert.com>",
+        "group": "Unspecified"
+    }
 
     bdist_appimage_options = {
-        "target_name": "GraXpert"
+        "target_name": "graxpert"
     }
 
     bdist_deb_options = {
-        # Not yet used
+        "depends": [
+            "libice6",
+            "libsm6",
+            "x11-common"
+        ]
     }
 
     bdist_mac_options = {
@@ -102,14 +108,14 @@ if cx_freeze_commands.intersection(sys.argv):
             [os.path.join(astropy_path, "units", "format", "generic_lextab.py"), "./lib/astropy/units/format/generic_lextab.py"],
         ],
         "excludes": [],
-        "include_msvcr": True,
+        "include_msvcr": True
     }
 
     base = "Win32GUI" if sys.platform == "win32" else None
 
-    executables = [cx_Freeze.Executable("./graxpert/main.py", base=base, 
+    executables = [cx_Freeze.Executable("./graxpert/main.py", base=base,
                                         icon="./img/Icon", # leave off extension so it will be autocorrected for any OS
-                                        target_name="GraXpert", 
+                                        target_name="graxpert",
                                         shortcut_name="GraXpert {}".format(version), shortcut_dir="GraXpert")]
 
     # Add the cx_Freeze options to the setup arguments dictionary
