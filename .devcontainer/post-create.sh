@@ -12,8 +12,11 @@ sudo chown -R $USER ~/.local
 echo "Installing python requirements"
 pip3 install --user -r requirements.txt
 
-echo "Installing onnxruntime-gpu for NVIDIA GPU support"
-pip install --user onnxruntime-gpu
+pip3 install --user cx_Freeze
 
-echo "Installing onnxruntime-rocm for AMD GPU support"
-pip3 install --user onnxruntime-rocm -f https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.3/
+# Temporarily disabling while investigating app image sizes
+# echo "Installing onnxruntime-gpu for NVIDIA GPU support"
+# pip install --user onnxruntime-gpu
+
+# echo "Installing onnxruntime-rocm for AMD GPU support"
+# pip3 install --user onnxruntime-rocm -f https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.3/
