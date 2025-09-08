@@ -6,7 +6,7 @@ ml_dtypes
 numpy
 Pillow
 pykrige
-opencv-Python
+opencv-python-headless
 requests
 scikit-image
 scipy
