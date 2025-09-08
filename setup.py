@@ -107,11 +107,14 @@ if cx_freeze_commands.intersection(sys.argv):
             [os.path.join(astropy_path, "units", "format", "generic_parsetab.py"), "./lib/astropy/units/format/generic_parsetab.py"],
             [os.path.join(astropy_path, "units", "format", "generic_lextab.py"), "./lib/astropy/units/format/generic_lextab.py"],
         ],
-        "excludes": [],
+        "excludes": [
+            "setuptools"
+        ],
         "include_msvcr": True
     }
 
-    base = "Win32GUI" if sys.platform == "win32" else None
+    # console allows passing in command line
+    base = "Win32GUI" if sys.platform == "win32" else "console"
 
     executables = [cx_Freeze.Executable("./graxpert/main.py", base=base,
                                         icon="./img/Icon", # leave off extension so it will be autocorrected for any OS
