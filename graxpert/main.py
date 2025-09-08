@@ -356,6 +356,8 @@ def main():
                 deconv_obj_parser.print_help()
             elif "deconv-stellar" in sys.argv:
                 deconv_stellar_parser.print_help()
+            else:
+                parser.print_help()
             sys.exit(0)
 
         args, extras = parser.parse_known_args()
@@ -368,6 +370,9 @@ def main():
             args = deconv_stellar_parser.parse_args()
         else:
             args = denoise_parser.parse_args()
+
+        # Note: we wait to setup logging until after parsing args, so that --help response doesn't get log framing
+        configure_logging()
 
         if args.cli and args.command == "background-extraction":
             from graxpert.cmdline_tools import BGECmdlineTool
@@ -404,10 +409,8 @@ def main():
     else:
         ui_main()
 
-
 if __name__ == "__main__":
     multiprocessing.freeze_support()
-    configure_logging()
     faulthandler.enable(sys.__stderr__)
     main()
     logging.shutdown()
