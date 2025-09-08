@@ -12,7 +12,7 @@ prefs = load_preferences(prefs_file)
 
 lang = None
 if prefs.lang is None:
-    lang, enc = locale.getdefaultlocale()
+    lang, enc = locale.getlocale()
     if lang is None:
         lang = "en_EN"
     elif lang.startswith("de") or lang.startswith("gsw"):
