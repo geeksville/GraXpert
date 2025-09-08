@@ -188,8 +188,8 @@ def ui_main(open_with_file=None):
 
 
 def main():
+    # listing available versions might be slow, so only do it if we have command line args
     if len(sys.argv) > 1:
-
         available_bge_versions = collect_available_versions(bge_ai_models_dir, bge_bucket_name)
         available_denoise_versions = collect_available_versions(denoise_ai_models_dir, denoise_bucket_name)
         available_deconv_obj_versions = collect_available_versions(deconvolution_object_ai_models_dir, deconvolution_object_bucket_name)
@@ -380,33 +380,30 @@ def main():
             logging.info(f"Starting GraXpert CLI, Background-Extraction, version: {graxpert_version} release: {graxpert_release}")
             clt = BGECmdlineTool(args)
             clt.execute()
-            logging.shutdown()
         elif args.cli and args.command == "denoising":
             from graxpert.cmdline_tools import DenoiseCmdlineTool
 
             logging.info(f"Starting GraXpert CLI, Denoising, version: {graxpert_version} release: {graxpert_release}")
             clt = DenoiseCmdlineTool(args)
             clt.execute()
-            logging.shutdown()
         elif args.cli and args.command == "deconv-obj":
             from graxpert.cmdline_tools import DeconvObjCmdlineTool
 
             logging.info(f"Starting GraXpert CLI, Deconvolution Obj, version: {graxpert_version} release: {graxpert_release}")
             clt = DeconvObjCmdlineTool(args)
             clt.execute()
-            logging.shutdown()
         elif args.cli and args.command == "deconv-stellar":
             from graxpert.cmdline_tools import DeconvStellarCmdlineTool
 
             logging.info(f"Starting GraXpert CLI, Deconvolution Stellar, version: {graxpert_version} release: {graxpert_release}")
             clt = DeconvStellarCmdlineTool(args)
             clt.execute()
-            logging.shutdown()
         else:
             logging.info(f"Starting GraXpert UI, version: {graxpert_version} release: {graxpert_release}")
             ui_main(args.filename)
 
     else:
+        configure_logging()
         ui_main()
 
 
