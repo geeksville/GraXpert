@@ -21,7 +21,7 @@ from graxpert.mp_logging import configure_logging
 from graxpert.s3_secrets import bge_bucket_name, denoise_bucket_name, deconvolution_object_bucket_name, deconvolution_stars_bucket_name
 from graxpert.version import release as graxpert_release
 from graxpert.version import version as graxpert_version
-
+from graxpert.resource_utils import temp_cleanup
 
 def collect_available_versions(ai_models_dir, bucket_name):
 
@@ -409,8 +409,12 @@ def main():
     else:
         ui_main()
 
+
 if __name__ == "__main__":
     multiprocessing.freeze_support()
     faulthandler.enable(sys.__stderr__)
-    main()
-    logging.shutdown()
+    try:
+        main()
+    finally:
+        temp_cleanup()
+        logging.shutdown()

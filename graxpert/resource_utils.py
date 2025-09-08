@@ -4,6 +4,8 @@ from tempfile import TemporaryDirectory
 
 temp_resource_dir = TemporaryDirectory()
 
+def temp_cleanup():
+    temp_resource_dir.cleanup()
 
 def resource_path(relative_path):
     base_path = os.path.join(os.path.dirname(os.path.dirname(__file__)))
