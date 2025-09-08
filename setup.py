@@ -3,6 +3,10 @@ import sys
 import re
 import setuptools
 
+author_name = "GraXpert Development Team"
+author_email = "info@graxpert.com"
+author_full = f"{author_name} <{author_email}>"
+
 # Read the contents of your requirements.txt file
 with open("requirements.txt", "r", encoding="utf-8") as f:
     install_requires = f.read().splitlines()
@@ -34,17 +38,66 @@ setup_options = {
     'name':"graxpert",
     'version':version,
     'description':"GraXpert is an astronomical image processing program for extracting and removing gradients in the background of your astrophotos",
-    'license':"GLP-3.0",
+    'license':"GPL-3.0",
+
+    'url':"https://graxpert.com",
+    'project_urls': {
+        "Source Code":"https://github.com/geeksville/GraXpert" # FIXME change when merged upstream
+    },
+
+    'author':author_name,
+    'author_email':author_email,
+
+    'python_requires':">=3.11",
+
+    # Name the executable for pip/pipx installs
+    'entry_points':{
+        'console_scripts': [
+            'graxpert = graxpert.main:main',
+        ],
+    },
 
     # A long description that will be displayed on PyPI
     'long_description':long_description,
     'long_description_content_type':"text/markdown",
 
-    # Find all packages automatically
+    # Find all packages automatically (used by cx_Freeze and setuptools)
     'packages': setuptools.find_packages(),
 
     # The dependencies that are required for the package to run
-    'install_requires': install_requires
+    'install_requires': install_requires,
+
+    'classifiers': [
+        # Development Status: Choose the one that fits best.
+        "Development Status :: 3 - Alpha",
+        # "Development Status :: 4 - Beta",
+        # "Development Status :: 5 - Production/Stable",
+
+        # Audience & Topic: Who is it for and what does it do?
+        "Intended Audience :: End Users/Desktop",
+        "Intended Audience :: Science/Research",
+        "Topic :: Scientific/Engineering :: Astronomy",
+        "Topic :: Scientific/Engineering :: Image Processing",
+        "Topic :: Multimedia :: Graphics :: Editors",
+
+        # Supported Python versions: List all versions you test against.
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+
+        # Operating System: Specify which OSs are supported.
+        "Operating System :: Microsoft :: Windows",
+        "Operating System :: MacOS",
+        "Operating System :: POSIX :: Linux",
+
+        # Environment: This clarifies it's a graphical application.
+        "Environment :: Win32 (MS Windows)",
+        "Environment :: MacOS X",
+        "Environment :: X11 Applications",
+        
+        # Natural Language
+        "Natural Language :: English",
+        "Natural Language :: German"
+    ]
 }
 
 # import cx_Freeze only when needed
@@ -64,7 +117,7 @@ if cx_freeze_commands.intersection(sys.argv):
         "Icon": [("IconId", "./img/Icon.ico")],
     }
 
-    msi_summary_data = {"author": "GraXpert Development Team", "comments": "<info@graxpert.com>"}
+    msi_summary_data = {"author": author_name, "comments": author_email}
 
     bdist_msi_options = {
         "add_to_path": True,
@@ -78,7 +131,7 @@ if cx_freeze_commands.intersection(sys.argv):
     # Not yet used, possibly never used if AppImage is sufficient
     bdist_rpm_options = {
         "release": release,
-        "vendor": "GraXpert Development Team <info@graxpert.com>",
+        "vendor": author_full,
         "group": "Unspecified"
     }
 
@@ -108,7 +161,8 @@ if cx_freeze_commands.intersection(sys.argv):
             [os.path.join(astropy_path, "units", "format", "generic_lextab.py"), "./lib/astropy/units/format/generic_lextab.py"],
         ],
         "excludes": [
-            "setuptools"
+            "setuptools",
+            "twine"
         ],
         "include_msvcr": True
     }

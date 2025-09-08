@@ -187,212 +187,226 @@ def ui_main(open_with_file=None):
     root.mainloop()
 
 
-def main():
-    # listing available versions might be slow, so only do it if we have command line args
-    if len(sys.argv) > 1:
-        available_bge_versions = collect_available_versions(bge_ai_models_dir, bge_bucket_name)
-        available_denoise_versions = collect_available_versions(denoise_ai_models_dir, denoise_bucket_name)
-        available_deconv_obj_versions = collect_available_versions(deconvolution_object_ai_models_dir, deconvolution_object_bucket_name)
-        available_deconv_stellar_versions = collect_available_versions(deconvolution_stars_ai_models_dir, deconvolution_stars_bucket_name)
+def parse_args():
+    available_bge_versions = collect_available_versions(bge_ai_models_dir, bge_bucket_name)
+    available_denoise_versions = collect_available_versions(denoise_ai_models_dir, denoise_bucket_name)
+    available_deconv_obj_versions = collect_available_versions(deconvolution_object_ai_models_dir, deconvolution_object_bucket_name)
+    available_deconv_stellar_versions = collect_available_versions(deconvolution_stars_ai_models_dir, deconvolution_stars_bucket_name)
 
-        parser = argparse.ArgumentParser(add_help=False)
-        parser.add_argument("-cli", "--cli", required=False, action="store_true", help="Has to be added when using the command line integration of GraXpert")
-        parser.add_argument(
-            "-cmd",
-            "--command",
-            required=False,
-            default="background-extraction",
-            choices=["background-extraction", "denoising", "deconv-obj", "deconv-stellar"],
-            type=str,
-            help="Choose the image operation to execute: Background Extraction or Denoising or Deconvolution",
-        )
-        parser.add_argument("filename", type=str, help="Path of the unprocessed image")
-        parser.add_argument("-output", "--output", nargs="?", required=False, type=str, help="Filename of the processed image")
-        parser.add_argument(
-            "-preferences_file",
-            "--preferences_file",
-            nargs="?",
-            required=False,
-            default=None,
-            type=str,
-            help="Allows GraXpert commandline to run all extraction methods based on a preferences file that contains background grid points",
-        )
-        parser.add_argument("-gpu", "--gpu_acceleration", type=str, choices=["true", "false"], default=None, help="Set to 'false' in order to disable gpu acceleration during AI inference.")
-        parser.add_argument("-v", "--version", action="version", version=f"GraXpert version: {graxpert_version} release: {graxpert_release}")
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument(
+        "-cmd",
+        "--command",
+        required=False,
+        default="background-extraction",
+        choices=["background-extraction", "denoising", "deconv-obj", "deconv-stellar"],
+        type=str,
+        help="Choose the image operation to execute: Background Extraction or Denoising or Deconvolution",
+    )
+    parser.add_argument("filename", type=str, help="Path of the unprocessed image")
+    parser.add_argument("-output", "--output", nargs="?", required=False, type=str, help="Filename of the processed image")
+    parser.add_argument(
+        "-preferences_file",
+        "--preferences_file",
+        nargs="?",
+        required=False,
+        default=None,
+        type=str,
+        help="Allows GraXpert commandline to run all extraction methods based on a preferences file that contains background grid points",
+    )
+    parser.add_argument("-gpu", "--gpu_acceleration", type=str, choices=["true", "false"], default=None, help="Set to 'false' in order to disable gpu acceleration during AI inference.")
+    parser.add_argument("-v", "--version", action="version", version=f"GraXpert version: {graxpert_version} release: {graxpert_release}")
+    parser.add_argument("-cli", "--cli", required=False, action="store_true", help="Deprecated (no longer required)")
 
-        bge_parser = argparse.ArgumentParser("GraXpert Background Extraction", parents=[parser], description="GraXpert, the astronomical background extraction tool")
-        bge_parser.add_argument(
-            "-ai_version",
-            "--ai_version",
-            nargs="?",
-            required=False,
-            default=None,
-            type=bge_version_type,
-            help='Version of the Background Extraction AI model, default: "latest"; available locally: [{}], available remotely: [{}]'.format(
-                ", ".join(available_bge_versions[0]), ", ".join(available_bge_versions[1])
-            ),
-        )
-        bge_parser.add_argument("-correction", "--correction", nargs="?", required=False, default=None, choices=["Subtraction", "Division"], type=str, help="Subtraction or Division")
-        bge_parser.add_argument("-smoothing", "--smoothing", nargs="?", required=False, default=None, type=float, help="Strength of smoothing between 0 and 1")
-        bge_parser.add_argument("-bg", "--bg", required=False, action="store_true", help="Also save the background model")
+    bge_parser = argparse.ArgumentParser("GraXpert Background Extraction", parents=[parser], description="GraXpert, the astronomical background extraction tool")
+    bge_parser.add_argument(
+        "-ai_version",
+        "--ai_version",
+        nargs="?",
+        required=False,
+        default=None,
+        type=bge_version_type,
+        help='Version of the Background Extraction AI model, default: "latest"; available locally: [{}], available remotely: [{}]'.format(
+            ", ".join(available_bge_versions[0]), ", ".join(available_bge_versions[1])
+        ),
+    )
+    bge_parser.add_argument("-correction", "--correction", nargs="?", required=False, default=None, choices=["Subtraction", "Division"], type=str, help="Subtraction or Division")
+    bge_parser.add_argument("-smoothing", "--smoothing", nargs="?", required=False, default=None, type=float, help="Strength of smoothing between 0 and 1")
+    bge_parser.add_argument("-bg", "--bg", required=False, action="store_true", help="Also save the background model")
 
-        denoise_parser = argparse.ArgumentParser("GraXpert Denoising", parents=[parser], description="GraXpert, the astronomical denoising tool")
-        denoise_parser.add_argument(
-            "-ai_version",
-            "--ai_version",
-            nargs="?",
-            required=False,
-            default=None,
-            type=denoise_version_type,
-            help='Version of the Denoising AI model, default: "latest"; available locally: [{}], available remotely: [{}]'.format(
-                ", ".join(available_denoise_versions[0]), ", ".join(available_denoise_versions[1])
-            ),
-        )
-        denoise_parser.add_argument(
-            "-strength",
-            "--denoise_strength",
-            nargs="?",
-            required=False,
-            default=None,
-            type=float,
-            help='Strength of the desired denoising effect, default: "0.5"',
-        )
-        denoise_parser.add_argument(
-            "-batch_size",
-            "--ai_batch_size",
-            nargs="?",
-            required=False,
-            default=None,
-            type=int,
-            help='Number of image tiles which Graxpert will denoise in parallel. Be careful: increasing this value might result in out-of-memory errors. Valid Range: 1..32, default: "4"',
-        )
+    denoise_parser = argparse.ArgumentParser("GraXpert Denoising", parents=[parser], description="GraXpert, the astronomical denoising tool")
+    denoise_parser.add_argument(
+        "-ai_version",
+        "--ai_version",
+        nargs="?",
+        required=False,
+        default=None,
+        type=denoise_version_type,
+        help='Version of the Denoising AI model, default: "latest"; available locally: [{}], available remotely: [{}]'.format(
+            ", ".join(available_denoise_versions[0]), ", ".join(available_denoise_versions[1])
+        ),
+    )
+    denoise_parser.add_argument(
+        "-strength",
+        "--denoise_strength",
+        nargs="?",
+        required=False,
+        default=None,
+        type=float,
+        help='Strength of the desired denoising effect, default: "0.5"',
+    )
+    denoise_parser.add_argument(
+        "-batch_size",
+        "--ai_batch_size",
+        nargs="?",
+        required=False,
+        default=None,
+        type=int,
+        help='Number of image tiles which Graxpert will denoise in parallel. Be careful: increasing this value might result in out-of-memory errors. Valid Range: 1..32, default: "4"',
+    )
 
-        deconv_obj_parser = argparse.ArgumentParser("GraXpert Deconvolution Object", parents=[parser], description="GraXpert, the astronomical deconvolution tool")
-        deconv_obj_parser.add_argument(
-            "-ai_version",
-            "--ai_version",
-            nargs="?",
-            required=False,
-            default=None,
-            type=deconv_obj_version_type,
-            help='Version of the Deconvolution Obj AI model, default: "latest"; available locally: [{}], available remotely: [{}]'.format(
-                ", ".join(available_deconv_obj_versions[0]), ", ".join(available_deconv_obj_versions[1])
-            ),
-        )
-        deconv_obj_parser.add_argument(
-            "-strength",
-            "--deconvolution_strength",
-            nargs="?",
-            required=False,
-            default=None,
-            type=float,
-            help='Strength of the desired deconvolution effect, default: "0.5"',
-        )
-        deconv_obj_parser.add_argument(
-            "-psfsize",
-            "--deconvolution_psfsize",
-            nargs="?",
-            required=False,
-            default=None,
-            type=float,
-            help='Size of the seeing you want to deconvolve, default: "0.3"',
-        )
-        deconv_obj_parser.add_argument(
-            "-batch_size",
-            "--ai_batch_size",
-            nargs="?",
-            required=False,
-            default=None,
-            type=int,
-            help='Number of image tiles which Graxpert will denoise in parallel. Be careful: increasing this value might result in out-of-memory errors. Valid Range: 1..32, default: "4"',
-        )
+    deconv_obj_parser = argparse.ArgumentParser("GraXpert Deconvolution Object", parents=[parser], description="GraXpert, the astronomical deconvolution tool")
+    deconv_obj_parser.add_argument(
+        "-ai_version",
+        "--ai_version",
+        nargs="?",
+        required=False,
+        default=None,
+        type=deconv_obj_version_type,
+        help='Version of the Deconvolution Obj AI model, default: "latest"; available locally: [{}], available remotely: [{}]'.format(
+            ", ".join(available_deconv_obj_versions[0]), ", ".join(available_deconv_obj_versions[1])
+        ),
+    )
+    deconv_obj_parser.add_argument(
+        "-strength",
+        "--deconvolution_strength",
+        nargs="?",
+        required=False,
+        default=None,
+        type=float,
+        help='Strength of the desired deconvolution effect, default: "0.5"',
+    )
+    deconv_obj_parser.add_argument(
+        "-psfsize",
+        "--deconvolution_psfsize",
+        nargs="?",
+        required=False,
+        default=None,
+        type=float,
+        help='Size of the seeing you want to deconvolve, default: "0.3"',
+    )
+    deconv_obj_parser.add_argument(
+        "-batch_size",
+        "--ai_batch_size",
+        nargs="?",
+        required=False,
+        default=None,
+        type=int,
+        help='Number of image tiles which Graxpert will denoise in parallel. Be careful: increasing this value might result in out-of-memory errors. Valid Range: 1..32, default: "4"',
+    )
 
-        deconv_stellar_parser = argparse.ArgumentParser("GraXpert Deconvolution Stellar", parents=[parser], description="GraXpert, the astronomical denoising tool")
-        deconv_stellar_parser.add_argument(
-            "-ai_version",
-            "--ai_version",
-            nargs="?",
-            required=False,
-            default=None,
-            type=deconv_stellar_version_type,
-            help='Version of the Deconvolution Stellar AI model, default: "latest"; available locally: [{}], available remotely: [{}]'.format(
-                ", ".join(available_deconv_stellar_versions[0]), ", ".join(available_deconv_stellar_versions[1])
-            ),
-        )
-        deconv_stellar_parser.add_argument(
-            "-strength",
-            "--deconvolution_strength",
-            nargs="?",
-            required=False,
-            default=None,
-            type=float,
-            help='Strength of the desired deconvolution effect, default: "0.5"',
-        )
-        deconv_stellar_parser.add_argument(
-            "-psfsize",
-            "--deconvolution_psfsize",
-            nargs="?",
-            required=False,
-            default=None,
-            type=float,
-            help='Size of the seeing you want to deconvolve, default: "0.3"',
-        )
-        deconv_stellar_parser.add_argument(
-            "-batch_size",
-            "--ai_batch_size",
-            nargs="?",
-            required=False,
-            default=None,
-            type=int,
-            help='Number of image tiles which Graxpert will denoise in parallel. Be careful: increasing this value might result in out-of-memory errors. Valid Range: 1..32, default: "4"',
-        )
+    deconv_stellar_parser = argparse.ArgumentParser("GraXpert Deconvolution Stellar", parents=[parser], description="GraXpert, the astronomical denoising tool")
+    deconv_stellar_parser.add_argument(
+        "-ai_version",
+        "--ai_version",
+        nargs="?",
+        required=False,
+        default=None,
+        type=deconv_stellar_version_type,
+        help='Version of the Deconvolution Stellar AI model, default: "latest"; available locally: [{}], available remotely: [{}]'.format(
+            ", ".join(available_deconv_stellar_versions[0]), ", ".join(available_deconv_stellar_versions[1])
+        ),
+    )
+    deconv_stellar_parser.add_argument(
+        "-strength",
+        "--deconvolution_strength",
+        nargs="?",
+        required=False,
+        default=None,
+        type=float,
+        help='Strength of the desired deconvolution effect, default: "0.5"',
+    )
+    deconv_stellar_parser.add_argument(
+        "-psfsize",
+        "--deconvolution_psfsize",
+        nargs="?",
+        required=False,
+        default=None,
+        type=float,
+        help='Size of the seeing you want to deconvolve, default: "0.3"',
+    )
+    deconv_stellar_parser.add_argument(
+        "-batch_size",
+        "--ai_batch_size",
+        nargs="?",
+        required=False,
+        default=None,
+        type=int,
+        help='Number of image tiles which Graxpert will denoise in parallel. Be careful: increasing this value might result in out-of-memory errors. Valid Range: 1..32, default: "4"',
+    )
 
-        if "-h" in sys.argv or "--help" in sys.argv:
-            if "background-extraction" in sys.argv:
-                bge_parser.print_help()
-            elif "denoising" in sys.argv:
-                denoise_parser.print_help()
-            elif "deconv-obj" in sys.argv:
-                deconv_obj_parser.print_help()
-            elif "deconv-stellar" in sys.argv:
-                deconv_stellar_parser.print_help()
-            else:
-                parser.print_help()
-            sys.exit(0)
-
-        args, extras = parser.parse_known_args()
-
-        if args.command == "background-extraction":
-            args = bge_parser.parse_args()
-        elif args.command == "deconv-obj":
-            args = deconv_obj_parser.parse_args()
-        elif args.command == "deconv-stellar":
-            args = deconv_stellar_parser.parse_args()
+    if "-h" in sys.argv or "--help" in sys.argv:
+        if "background-extraction" in sys.argv:
+            bge_parser.print_help()
+        elif "denoising" in sys.argv:
+            denoise_parser.print_help()
+        elif "deconv-obj" in sys.argv:
+            deconv_obj_parser.print_help()
+        elif "deconv-stellar" in sys.argv:
+            deconv_stellar_parser.print_help()
         else:
-            args = denoise_parser.parse_args()
+            parser.print_help()
+        sys.exit(0)
+
+    args, extras = parser.parse_known_args()
+
+    if args.command == "background-extraction":
+        args = bge_parser.parse_args()
+    elif args.command == "deconv-obj":
+        args = deconv_obj_parser.parse_args()
+    elif args.command == "deconv-stellar":
+        args = deconv_stellar_parser.parse_args()
+    else:
+        args = denoise_parser.parse_args()
+
+    return args
+
+def main():
+    """Note: this is entered directly via the entry_point definition in setup.py or called from below"""
+
+    multiprocessing.freeze_support()
+    faulthandler.enable(sys.__stderr__)
+
+    try:
+        # listing available versions might be slow, so only do it if we have command line args
+        if len(sys.argv) > 1:
+            args = parse_args()
+        else:
+            # Dummy noarg defs
+            args = { "command": None, "filename": None }
 
         # Note: we wait to setup logging until after parsing args, so that --help response doesn't get log framing
         configure_logging()
 
-        if args.cli and args.command == "background-extraction":
+        if args.command == "background-extraction":
             from graxpert.cmdline_tools import BGECmdlineTool
 
             logging.info(f"Starting GraXpert CLI, Background-Extraction, version: {graxpert_version} release: {graxpert_release}")
             clt = BGECmdlineTool(args)
             clt.execute()
-        elif args.cli and args.command == "denoising":
+        elif args.command == "denoising":
             from graxpert.cmdline_tools import DenoiseCmdlineTool
 
             logging.info(f"Starting GraXpert CLI, Denoising, version: {graxpert_version} release: {graxpert_release}")
             clt = DenoiseCmdlineTool(args)
             clt.execute()
-        elif args.cli and args.command == "deconv-obj":
+        elif args.command == "deconv-obj":
             from graxpert.cmdline_tools import DeconvObjCmdlineTool
 
             logging.info(f"Starting GraXpert CLI, Deconvolution Obj, version: {graxpert_version} release: {graxpert_release}")
             clt = DeconvObjCmdlineTool(args)
             clt.execute()
-        elif args.cli and args.command == "deconv-stellar":
+        elif args.command == "deconv-stellar":
             from graxpert.cmdline_tools import DeconvStellarCmdlineTool
 
             logging.info(f"Starting GraXpert CLI, Deconvolution Stellar, version: {graxpert_version} release: {graxpert_release}")
@@ -401,17 +415,11 @@ def main():
         else:
             logging.info(f"Starting GraXpert UI, version: {graxpert_version} release: {graxpert_release}")
             ui_main(args.filename)
-
-    else:
-        configure_logging()
-        ui_main()
+    finally:
+        temp_cleanup()
+        logging.shutdown()        
 
 
 if __name__ == "__main__":
-    multiprocessing.freeze_support()
-    faulthandler.enable(sys.__stderr__)
-    try:
-        main()
-    finally:
-        temp_cleanup()
-        logging.shutdown()
+    main()
+
