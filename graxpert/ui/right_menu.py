@@ -40,16 +40,23 @@ class HelpFrame(RightFrameBase):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
+        self.img = Image.open(resource_path("img/GraXpert_LOGO_Hauptvariante.png"))
         self.create_and_place_children()
         self.setup_layout()
+
+    def _on_destroy(self, event):
+        """This method is called when the widget is destroyed."""
+        if self.img:
+            self.img.close()
 
     def default_grid(self):
         return {"column": 0, "row": self.nrow(), "padx": padx, "pady": pady, "sticky": tk.EW}
 
     def create_and_place_children(self):
+
         logo = CTkImage(
-            light_image=Image.open(resource_path("img/GraXpert_LOGO_Hauptvariante.png")),
-            dark_image=Image.open(resource_path("img/GraXpert_LOGO_Hauptvariante.png")),
+            light_image=self.img,
+            dark_image=self.img,
             size=(225, 111),
         )
 
