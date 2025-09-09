@@ -9,7 +9,7 @@ ARG USERNAME=vscode
 USER root
 
 RUN apt update
-RUN apt install -y libgl1-mesa-glx wget sudo git patchelf
+RUN apt install -y --no-install-recommends python3-setuptools python3-wheel rpm alien libgl1-mesa-glx wget sudo git patchelf 
 
 # Create a non-root user if one doesn't exist, and give it sudo rights
 RUN if ! id -u ${USERNAME} > /dev/null 2>&1; then \
@@ -25,11 +25,14 @@ RUN if ! id -u ${USERNAME} > /dev/null 2>&1; then \
 # per https://rocm.docs.amd.com/projects/radeon/en/latest/docs/install/native_linux/install-onnx.html
 # and https://rocm.docs.amd.com/projects/install-on-linux/en/latest/install/quick-start.html
 RUN wget -P /tmp https://repo.radeon.com/amdgpu-install/6.4.3/ubuntu/jammy/amdgpu-install_6.4.60403-1_all.deb
-RUN apt install -y /tmp/amdgpu-install_6.4.60403-1_all.deb
+RUN apt install -y --no-install-recommends /tmp/amdgpu-install_6.4.60403-1_all.deb
 RUN apt update
-RUN apt install -y python3-setuptools python3-wheel rpm alien
 # sudo usermod -a -G render,video $LOGNAME # Add the current user to the render and video groups
 RUN apt -y install rocm
+
+# try to clean up space so our devcontainer can fit in the 14GB github action limit
+RUN apt-get clean 
+RUN rm -rf /var/lib/apt/lists/*
 
 # Default user for devcontainer
 USER ${USERNAME}
