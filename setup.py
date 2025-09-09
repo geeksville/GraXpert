@@ -72,6 +72,13 @@ setup_options = {
         "openvino": ["onnxruntime-openvino>=1.22.0"],
     },
 
+    'package_data': {
+        'graxpert': [
+            'locales/de_DE/LC_MESSAGES/*.mo',
+            'theme/*.json'  # <-- Add this line
+        ],
+    },    
+
     'classifiers': [
         # Development Status: Choose the one that fits best.
         "Development Status :: 3 - Alpha",
