@@ -17,6 +17,21 @@ import types
 
 from packaging import version
 
+# Must be before all other graxpert imports
+try:
+    # A load-time check for key external package dependencies. Crash and warn user.
+    import tkinter
+except ImportError:
+    # If it fails, print a helpful message and exit.
+    print("ERROR: The required 'tkinter' GUI library is not installed.", file=sys.stderr)
+    print("\nPlease install it using your system's package manager.", file=sys.stderr)
+    print("  For Debian/Ubuntu: sudo apt-get install python3-tk", file=sys.stderr)
+    print("  For Fedora:        sudo dnf install python3-tkinter", file=sys.stderr)
+    print("  For Arch Linux:    sudo pacman -S tk", file=sys.stderr)
+    print("  For Windows/OS-X:  It should be included with your Python installation by default.", file=sys.stderr)
+    sys.exit(1) # Exit with error
+
+
 from graxpert.ai_model_handling import bge_ai_models_dir, denoise_ai_models_dir, deconvolution_object_ai_models_dir, deconvolution_stars_ai_models_dir, list_local_versions, list_remote_versions
 from graxpert.mp_logging import configure_logging
 from graxpert.s3_secrets import bge_bucket_name, denoise_bucket_name, deconvolution_object_bucket_name, deconvolution_stars_bucket_name
@@ -401,7 +416,7 @@ def main():
             logging.info(f"Starting GraXpert CLI, Denoising, version: {graxpert_version} release: {graxpert_release}")
             clt = DenoiseCmdlineTool(args)
             clt.execute()
-        elif  args.command == "deconv-obj":
+        elif args.command == "deconv-obj":
             from graxpert.cmdline_tools import DeconvObjCmdlineTool
 
             logging.info(f"Starting GraXpert CLI, Deconvolution Obj, version: {graxpert_version} release: {graxpert_release}")
