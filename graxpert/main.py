@@ -382,7 +382,7 @@ def parse_args():
         args = deconv_obj_parser.parse_args()
     elif args.command == "deconv-stellar":
         args = deconv_stellar_parser.parse_args()
-    else:
+    elif args.command == "denoising":
         args = denoise_parser.parse_args()
 
     return args

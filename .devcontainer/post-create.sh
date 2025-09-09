@@ -12,7 +12,7 @@ sudo chown -R $USER ~/.local
 echo "Installing python requirements"
 pip3 install --user -r requirements.txt
 
-pip3 install --user cx_Freeze
+pip3 install --user cx_Freeze build
 
 # Moved into requirements.txt to match historic user expectations (though it adds about about 500MB to exe size)
 # without this added exe is already 500MB.
