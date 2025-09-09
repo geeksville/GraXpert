@@ -5,12 +5,11 @@ from queue import Empty, Queue
 from threading import Thread
 
 from customtkinter import CTkButton, CTkFont, CTkFrame, CTkImage, CTkLabel, CTkProgressBar, DoubleVar, StringVar, ThemeManager
-from PIL import Image
 
 from graxpert.application.app_events import AppEvents
 from graxpert.application.eventbus import eventbus
 from graxpert.localization import _
-from graxpert.resource_utils import resource_path
+from graxpert.resource_utils import resource_image
 
 
 class LoadingFrame(CTkFrame):
@@ -25,7 +24,7 @@ class LoadingFrame(CTkFrame):
         self.text = CTkLabel(
             self,
             text=_("Calculating..."),
-            image=CTkImage(light_image=Image.open(resource_path("img/hourglass.png")), dark_image=Image.open(resource_path("img/hourglass.png")), size=(30, 30)),
+            image=CTkImage(light_image=resource_image("hourglass.png"), dark_image=resource_image("hourglass.png"), size=(30, 30)),
             font=font,
             compound=tk.LEFT,
         )

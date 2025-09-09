@@ -75,7 +75,8 @@ setup_options = {
     'package_data': {
         'graxpert': [
             'locales/de_DE/LC_MESSAGES/*.mo',
-            'theme/*.json'  # <-- Add this line
+            'theme/*.json',
+            'img/*'
         ],
     },    
 

@@ -17,9 +17,6 @@ def style():
         # Now copy the file from the reliably found path
         shutil.copy(theme_path, temp_resource_path(theme_file))
 
-    #theme_file = "graxpert-dark-blue.json"
-    #os.makedirs(os.path.dirname(temp_resource_path(theme_file)), exist_ok=True)
-    #shutil.copy(resource_path(theme_file), temp_resource_path(theme_file))
     customtkinter.set_default_color_theme(temp_resource_path(theme_file))
     customtkinter.set_appearance_mode("dark")
     scaling = get_scaling_factor()

@@ -5,14 +5,13 @@ from tkinter import messagebox
 import customtkinter as ctk
 from customtkinter import CTkFont, CTkImage, CTkLabel, CTkSwitch, CTkTextbox
 from packaging import version
-from PIL import Image
 
 from graxpert.ai_model_handling import bge_ai_models_dir, deconvolution_object_ai_models_dir, deconvolution_stars_ai_models_dir, denoise_ai_models_dir, list_local_versions, list_remote_versions
 from graxpert.application.app import graxpert
 from graxpert.application.app_events import AppEvents
 from graxpert.application.eventbus import eventbus
 from graxpert.localization import _, lang
-from graxpert.resource_utils import resource_path
+from graxpert.resource_utils import resource_image
 from graxpert.s3_secrets import bge_bucket_name, deconvolution_object_bucket_name, deconvolution_stars_bucket_name, denoise_bucket_name
 from graxpert.ui.widgets import GraXpertOptionMenu, GraXpertScrollableFrame, ProcessingStep, ValueSlider, padx, pady
 
@@ -40,7 +39,7 @@ class HelpFrame(RightFrameBase):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-        self.img = Image.open(resource_path("img/GraXpert_LOGO_Hauptvariante.png"))
+        self.img = resource_image("GraXpert_LOGO_Hauptvariante.png")
         self.create_and_place_children()
         self.setup_layout()
 

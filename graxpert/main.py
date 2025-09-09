@@ -118,7 +118,7 @@ def ui_main(open_with_file=None):
     from graxpert.mp_logging import initialize_logging, shutdown_logging
     from graxpert.parallel_processing import executor
     from graxpert.preferences import app_state_2_prefs, save_preferences
-    from graxpert.resource_utils import resource_path
+    from graxpert.resource_utils import resource_photoimage
     from graxpert.ui.application_frame import ApplicationFrame
     from graxpert.ui.styling import style
     from graxpert.ui.ui_events import UiEvents
@@ -183,7 +183,7 @@ def ui_main(open_with_file=None):
 
     root.title("GraXpert | Release: '{}' ({})".format(release, version))
     root.iconbitmap()
-    root.iconphoto(True, tk.PhotoImage(file=resource_path("img/Icon.png")))
+    root.iconphoto(True, resource_photoimage("Icon.png"))
     # root.option_add("*TkFDialog*foreground", "black")
     root.protocol("WM_DELETE_WINDOW", lambda: on_closing(root, logging_thread))
     root.createcommand("::tk::mac::Quit", lambda: on_closing(root, logging_thread))
