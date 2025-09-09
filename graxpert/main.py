@@ -13,6 +13,7 @@ import multiprocessing
 import re
 import sys
 import faulthandler
+import types
 
 from packaging import version
 
@@ -383,7 +384,7 @@ def main():
             args = parse_args()
         else:
             # Dummy noarg defs
-            args = { "command": None, "filename": None }
+            args = types.SimpleNamespace(command=None, filename=None)
 
         # Note: we wait to setup logging until after parsing args, so that --help response doesn't get log framing
         configure_logging()
@@ -400,7 +401,7 @@ def main():
             logging.info(f"Starting GraXpert CLI, Denoising, version: {graxpert_version} release: {graxpert_release}")
             clt = DenoiseCmdlineTool(args)
             clt.execute()
-        elif args.command == "deconv-obj":
+        elif  args.command == "deconv-obj":
             from graxpert.cmdline_tools import DeconvObjCmdlineTool
 
             logging.info(f"Starting GraXpert CLI, Deconvolution Obj, version: {graxpert_version} release: {graxpert_release}")
