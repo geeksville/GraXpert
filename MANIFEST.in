@@ -7,5 +7,6 @@ recursive-include locales *
 recursive-include graxpert *
 graft graxpert/theme
 graft graxpert/img
+graft graxpert/locales
 
 prune tests
