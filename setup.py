@@ -67,6 +67,11 @@ setup_options = {
     # The dependencies that are required for the package to run
     'install_requires': install_requires,
 
+    'extras_require': {
+        "rocm": ["onnxruntime-rocm>=1.22.2"],
+        "openvino": ["onnxruntime-openvino>=1.22.0"],
+    },
+
     'classifiers': [
         # Development Status: Choose the one that fits best.
         "Development Status :: 3 - Alpha",

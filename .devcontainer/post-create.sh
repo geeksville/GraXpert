@@ -14,9 +14,13 @@ pip3 install --user -r requirements.txt
 
 pip3 install --user cx_Freeze
 
-# Temporarily disabling while investigating app image sizes
-# echo "Installing onnxruntime-gpu for NVIDIA GPU support"
-# pip install --user onnxruntime-gpu
+# Moved into requirements.txt to match historic user expectations (though it adds about about 500MB to exe size)
+# without this added exe is already 500MB.
+#echo "Installing onnxruntime-gpu for NVIDIA GPU support"
+#pip install --user onnxruntime-gpu
 
+# FIXME test onnxruntime-openvino to see how exe size is affected
+
+# would add 4.5GB! to exe size, make optional for AMD GPU users
 # echo "Installing onnxruntime-rocm for AMD GPU support"
-# pip3 install --user onnxruntime-rocm -f https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.3/
+# pip3 install --user onnxruntime-rocm 
