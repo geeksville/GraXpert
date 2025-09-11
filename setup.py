@@ -68,6 +68,7 @@ setup_options = {
     'install_requires': install_requires,
 
     'extras_require': {
+        "cuda": ["onnxruntime-gpu[cuda,cudnn]==1.22.0 ; sys_platform != 'darwin'"],
         "rocm": ["onnxruntime-rocm>=1.22.2"],
         "openvino": ["onnxruntime-openvino>=1.22.0"],
     },

@@ -2,7 +2,7 @@
 	"name": "graxpert-devcontainer",
 
 	"build": {
-		"dockerfile": "../Dockerfile",	
+		"dockerfile": "Dockerfile.rocm",		
 		"args": {
 			"WORKSPACE": "${containerWorkspaceFolder}"
 		}
@@ -13,7 +13,7 @@
 		//"--network=host", // Use host network rather than our bridged container network
 		"--ipc=host", // Needed to make python SharedMemory work
 
-		"--name=graxpert-devcontainer-debian", // For easier management
+		"--name=graxpert-devcontainer-rocm", // For easier management
 
 		"--user=1000:1000",
 
