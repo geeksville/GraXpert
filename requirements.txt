@@ -1,15 +1,14 @@
 ml-dtypes>=0.5.3
 pillow>=11.3.0
-appdirs>=1.4.4
+appdirs
 astropy>=6.1.7
 astropy-iers-data>=0.2025.9.1.0.42.11
 customtkinter>=5.2.2
 imageio>=2.37.0
 minio>=7.2.16
-numpy>=2.2.6
-onnxruntime
-onnxruntime-gpu ; sys_platform != 'darwin'
-opencv-python-headless>=4.12.0.88
+numpy==2.2.6
+onnxruntime==1.22.1
+opencv-python-headless==4.11.0.86
 PyKrige>=1.7.2
 requests>=2.32.5
 scikit-image>=0.25.2

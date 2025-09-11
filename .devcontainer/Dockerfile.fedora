@@ -30,5 +30,7 @@ RUN if ! id -u ${USERNAME} > /dev/null 2>&1; then \
         echo "${USERNAME} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/${USERNAME}-nopasswd; \
     fi
 
+# RUN dnf install -y rocmcore rocm-device-libs rocm-smi
+
 # Default user for devcontainer
 USER ${USERNAME}

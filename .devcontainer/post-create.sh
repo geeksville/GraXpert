@@ -10,17 +10,26 @@ mkdir ~/.local | true
 sudo chown -R $USER ~/.local
 
 echo "Installing python requirements"
-pip3 install --user -r requirements.txt
+pip3 install --user --break-system-packages -r requirements.txt
 
-pip3 install --user cx_Freeze build
+pip3 install --user --break-system-packages cx_Freeze build
 
+# onnxruntime-gpu (moved to requirements.txt)
 # Moved into requirements.txt to match historic user expectations (though it adds about about 500MB to exe size)
 # without this added exe is already 500MB.
-#echo "Installing onnxruntime-gpu for NVIDIA GPU support"
-#pip install --user onnxruntime-gpu
+# echo "Installing onnxruntime-gpu for NVIDIA GPU support"
+# pip install --user onnxruntime-gpu[cuda,cudnn]
 
 # FIXME test onnxruntime-openvino to see how exe size is affected
 
+# rocm moved to requirements-rocm.txt 
 # would add 4.5GB! to exe size, make optional for AMD GPU users
 # echo "Installing onnxruntime-rocm for AMD GPU support"
-# pip3 install --user onnxruntime-rocm 
+# pip install --user --force onnxruntime-rocm==1.21.0 onnxruntime==1.21.0 onnxruntime-gpu[cuda,cudnn]==1.21.0 -f https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.3/
+
+# NOTE! If using rocm you must uninstall onnxruntime-gpu and THEN install from the rocm repo
+# NOTE! rocm support only seems to be enabled currently in Ubuntu, not bare Debian!
+pip3 uninstall -y --break-system-packages onnxruntime-gpu
+pip3 install --user --force --break-system-packages onnxruntime-rocm -f https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.3/
+
+pip3 cache purge

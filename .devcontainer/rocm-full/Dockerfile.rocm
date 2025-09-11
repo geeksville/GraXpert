@@ -1,6 +1,5 @@
-# Run inside a recent debian based image with python3, pip3, git and sudo installed
-# We are careful to use the python 3.12 version, because the rocm precompiled python native code for onxruntime is only available for a few versions
-FROM python:3.12.11-slim-bookworm
+# This is a **very** heavy container but has all of the onnxruntime-rocm stuff.  Used to test container build dependencies
+FROM docker.io/rocm/onnxruntime:latest
 
 # We use 'user' as the name to match what the zhephyr-build image already created
 ARG USERNAME=vscode
@@ -20,15 +19,6 @@ RUN if ! id -u ${USERNAME} > /dev/null 2>&1; then \
 
 # extra packages needed for debugging native crashes in python
 # RUN apt install -y python3-venv python3-dbg python3-tk-dbg
-
-# Install and run AMD ROCm GPU support.  Note: 6.4.2 is what is included in the Dockerfile.rocm container (which works)
-# per https://rocm.docs.amd.com/projects/radeon/en/latest/docs/install/native_linux/install-onnx.html
-# and https://rocm.docs.amd.com/projects/install-on-linux/en/latest/install/quick-start.html
-RUN wget -P /tmp https://repo.radeon.com/amdgpu-install/6.4.3/ubuntu/jammy/amdgpu-install_6.4.60403-1_all.deb
-RUN apt install -y --allow-downgrades --no-install-recommends /tmp/amdgpu-install_6.4.60403-1_all.deb
-RUN apt update
-# sudo usermod -a -G render,video $LOGNAME # Add the current user to the render and video groups
-RUN apt -y install rocm
 
 # try to clean up space so our devcontainer can fit in the 14GB github action limit
 RUN apt-get clean 
