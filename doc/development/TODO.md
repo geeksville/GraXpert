@@ -1,4 +1,18 @@
+# TODO
 
+Note: this document is currently a virtually unstructured pile of notes for @geeksville's work
+on graxpert.  You can probably ignore it
+
+# Changelist
+
+* Intel OpenVINO AI acceleration support added by FIXME (this should allow **much** faster processing on AVX2/VNNI capable Intel CPUs - including the N100/N300 CPUs often used in telescope miniPCs)
+* GPU acceleration for AMD GPUs (a 200x speedup vs CPU processing: 200 minute runs become 1 minute)
+* In addition to the old package options, graxpert is now available on pypi for easy install with "pip install graxpert" on Windows, Mac-OS, or Linux.
+* Fix a number of resource leaks while the app was running.
+* Previously most failures inside of graxpert would cause the app to appear to hang.  This is now fixed, the app will exit with an exception message instead.  Please report any failures you encounter by filing a github issue at XXX.
+* The -cli command line flag is no longer required (but will be ignored if you still use it).  Just pass in command line arguments as you wish (see README.md for documentation)
+
+# Test commands
 
 PYTHONPATH=. python graxpert/main.py -cmd background-extraction -output /tmp/testout tests/test_images/real_crummy.fits
 
@@ -72,10 +86,11 @@ pip install graxpert
 # Installs the base app PLUS the ROCm-specific package
 
 sudo dnf install rocm
-sudo apt install rocm
+sudo apt install rocm-libs
 
-pip install graxpert[rocm,openvino]
-pipx install ~/development/telescope/graxpert/dist/graxpert-3.2.0a0.dev1-py3-none-any.whl[openvino,rocm]
+pip install graxpert[openvino]
+pip install graxpert[rocm]
+pip install --user --break-system-packages ~/development/telescope/graxpert/dist/graxpert-3.2.0a0.dev1-py3-none-any.whl[rocm] -f https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.3/
 
 strace -o run.strace python3 -c "import onnxruntime; print(onnxruntime.get_available_providers())"
 

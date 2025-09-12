@@ -1,0 +1,23 @@
+// This devcontainer allows testing under Windows in a VM as needed... (even if the host OS is Linux or OS-X)
+{
+  "name": "windows",
+  "service": "windows",
+  "forwardPorts": [8006],
+  "dockerComposeFile": "compose.yml",
+
+  // dockur/windows will automount this as Z drive in Windows
+  "workspaceFolder": "/workspace",
+
+  "mounts": [
+    "source=${localWorkspaceFolder},target=/workspace,type=bind"
+    ],
+
+  // "postCreateCommand": "pip install -r requirements.txt"
+
+  "features": {
+    "ghcr.io/devcontainers/features/git": {
+      "configureUserName": true,
+      "configureUserEmail": true
+    }
+  }
+}
