@@ -1,0 +1,29 @@
+services:
+  # per https://github.com/dockur/macos
+  macos:
+    image: docker.io/dockurr/macos
+    container_name: macos
+    environment:
+      VERSION: "13"
+      
+      GPU: "Y" # make GPU work?
+      # VGA: "virtio-vga" # not supported      
+
+      # RAM_SIZE: "4G" defaults
+      # CPU_CORES: "2"      
+    devices:
+      - /dev/kvm
+      - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 8007:8006
+      - 5900:5900/tcp
+      - 5900:5900/udp
+    volumes:
+      - ./macos-storage:/storage:z
+      - ../..:/shared:z # Mount in macos with sudo -S mount_9p shared
+    # restart: always
+    stop_grace_period: 2m
+    privileged: true # Needed for access to linux kvm
+

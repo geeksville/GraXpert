@@ -16,6 +16,9 @@ on graxpert.  You can probably ignore it
 
 PYTHONPATH=. python graxpert/main.py -cmd background-extraction -output /tmp/testout tests/test_images/real_crummy.fits
 
+FIXME - follow in instructions for vc 14 runtime install, after enabling ssh
+py -m pip install //host.lan/Data/dist/graxpert-3.2.0a0.dev1-py3-none-any.whl[cuda]
+
 # why does covolution run slow (runs out of VRAM)?
 
 2025-07-28 15:28:31,227 MainProcess root INFO     Progress: 36%
