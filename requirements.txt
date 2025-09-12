@@ -7,7 +7,6 @@ customtkinter>=5.2.2
 imageio>=2.37.0
 minio>=7.2.16
 numpy==2.2.6
-onnxruntime==1.22.1
 opencv-python-headless==4.11.0.86
 PyKrige>=1.7.2
 requests>=2.32.5

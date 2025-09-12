@@ -10,14 +10,29 @@ is an AI method which does not require any user input.
 
 Original                     |  Gradients removed with AI
 :-------------------------:|:-------------------------:
-![Original](https://github.com/Steffenhir/GraXpert/blob/main/img/NGC7000_original.jpg)   |  ![Gradients removed](https://github.com/Steffenhir/GraXpert/blob/main/img/NGC7000_processed.jpg)
-![Original](https://github.com/Steffenhir/GraXpert/blob/main/img/LDN1235_original.jpg)   |  ![Gradients removed](https://github.com/Steffenhir/GraXpert/blob/main/img/LDN1235_processed.jpg)
+![Original](img/NGC7000_original.jpg)   |  ![Gradients removed](img/NGC7000_processed.jpg)
+![Original](img/LDN1235_original.jpg)   |  ![Gradients removed](img/LDN1235_processed.jpg)
 
 
 **Homepage:** [https://www.graxpert.com](https://www.graxpert.com)  
 **Download:** [https://github.com/Steffenhir/GraXpert/releases/latest](https://github.com/Steffenhir/GraXpert/releases/latest)
 
-# Installation
+# Cross-Platform Installation
+We are currently testing an optional cross-platform system for installing graxpert - which allows much smaller installation images and automated download/updates.
+
+We do this via the the python [pypi.org](https://pypi.org/project/graxpert/) repository 'app-store.'  This is particularly important if you'd like to have GPU acceleration support for non Nvidia GPUs.  To install via this mechanism:
+
+1. Install [python](https://www.python.org/downloads/) runtime for your OS.  The default install should automatically include the python package manager 'pip'.
+2. At a shell prompt type the correct flavor of graxpert to install for your needs.  If you don't have any GPU acceleration we recommend installing the \[openvino\] version because that will provide some sizable (better than CPU only) acceleration on most modern Intel CPUs.
+
+* **pip install graxpert\[cuda\]** - Use this if you have an Nvidia GPU
+* **pip install graxpert\[rocm\]** - Use this if you have an AMD GPU
+* **pip install graxpert\[openvino\]** - Use this if you don't have an advance GPU or don't know what you have
+* **pip install graxpert\[cpuonly\]** - If you encounter bugs with any of our GPU versions, please file a bug and temporarily use this version (which excludes all GPU code)
+
+If you are an advanced python user and know about the 'pipx' tool, we recommend that you use that tool instead of pip for installs.
+
+# Legacy Installation
 You can download the latest official release of GraXpert [here](https://github.com/Steffenhir/GraXpert/releases/latest). Select the correct version for your operating system. For macOS, we provide different versions
 for Intel processors (x86_64) and for apple silicon (arm64).
 
@@ -31,7 +46,6 @@ Here are the available command-line arguments and their descriptions:
 
 - -cmd [image_operation]: This flag indicates which AI model to use. Options are "background-extraction" (default) or "denoising".
 - filename: The path of the unprocessed image (required).
-- -cli: This flag always has to be added when using the command line integration of GraXpert. Otherwise, the GUI will start and open the specified file name.
 - -output [output_file_name]: Specify the name of the output image (without file ending). Otherwise the image will be saved with the suffix '_GraXpert' added to the original file name.
 - -preferences_file: Allows GraXpert commandline to run all extraction methods based on a preferences file that contains background grid points.
 - -gpu: Set to 'false' in order to disable gpu acceleration during AI inference, otherwise set to 'true' to enable it.
@@ -56,12 +70,12 @@ The following examples show how GraXpert can be used from the command line in Wi
 
 Basic Usage:
 ```
-GraXpert-win64.exe my_image.fits -cli
+GraXpert-win64.exe my_image.fits
 ```
 
 Specify AI Model Version '1.1', correction type 'Division', smoothing '0.1', and save background model:
 ```
-GraXpert-win64.exe my_image.fits -cli -ai_version 1.1 -correction Division -smoothing 0.1 -bg
+GraXpert-win64.exe my_image.fits -ai_version 1.1 -correction Division -smoothing 0.1 -bg
 ```
 
 # Installation for Developers

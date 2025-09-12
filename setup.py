@@ -68,9 +68,15 @@ setup_options = {
     'install_requires': install_requires,
 
     'extras_require': {
-        "cuda": ["onnxruntime-gpu[cuda,cudnn]==1.22.0 ; sys_platform != 'darwin'"],
+        # NOTE: the onnxruntime-gpu, -rocm and generic version are all **mutually exclusive** you must install only one, otherwise
+        # you might get whichever was installed most recently.  Therefore we are now strict about dependencies (and moved onnxruntime
+        # out of requirements.txt).  Users will need to pick one at install time.
+        "cuda": ["onnxruntime-gpu[cuda,cudnn]==1.22.0"], # FIXME test this on osx - it might be fine ; sys_platform != 'darwin'
         "rocm": ["onnxruntime-rocm>=1.22.2"],
         "openvino": ["onnxruntime-openvino>=1.22.0"],
+
+        # Not recommended, if you don't have a GPU just choose openvino and many newer Intel CPUs will at least be accelerated by that
+        "cpuonly": ["onnxruntime>=1.22.0"]
     },
 
     'package_data': {

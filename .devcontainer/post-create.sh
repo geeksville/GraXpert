@@ -29,7 +29,8 @@ pip3 install --user --break-system-packages cx_Freeze build
 
 # NOTE! If using rocm you must uninstall onnxruntime-gpu and THEN install from the rocm repo
 # NOTE! rocm support only seems to be enabled currently in Ubuntu, not bare Debian!
-pip3 uninstall -y --break-system-packages onnxruntime-gpu
-pip3 install --user --force --break-system-packages onnxruntime-rocm -f https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.3/
+pip3 uninstall -y --break-system-packages onnxruntime onnxruntime-gpu
+# switching to the rocm runtime apparently requires **removing** the onnxruntime package (which came from a different repo?)
+pip3 install --user --force --break-system-packages numpy==2.2.6 onnxruntime-rocm -f https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.3/
 
 pip3 cache purge
