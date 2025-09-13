@@ -20,7 +20,7 @@ RUN dnf install -y \
     python3.12 \
     python3-devel \
     python3-pip \
-    python3-setuptools python3-wheel rpmbuild
+    python3-setuptools python3-wheel python3-tkinter rpmbuild
 
 # Create a non-root user if one doesn't exist, and give it sudo rights
 # This user creation logic is standard and works on Fedora as well

@@ -2,7 +2,6 @@ import copy
 import logging
 
 import numpy as np
-import onnxruntime as ort
 
 from graxpert.ai_model_handling import get_execution_providers_ordered
 from graxpert.application.app_events import AppEvents
@@ -10,7 +9,6 @@ from graxpert.application.eventbus import eventbus
 
 
 def deconvolve(image, ai_path, strength, psfsize, batch_size=4, window_size=512, stride=448, progress=None, ai_gpu_acceleration=True):
-
     logging.info("Starting deconvolution")
     if "stars" in ai_path:
         type = "Stellar"
@@ -66,6 +64,7 @@ def deconvolve(image, ai_path, strength, psfsize, batch_size=4, window_size=512,
     output = copy.deepcopy(image)
 
     providers = get_execution_providers_ordered(ai_gpu_acceleration)
+    import onnxruntime as ort # Must be after get_execution_providers_ordered
     session = ort.InferenceSession(ai_path, providers=providers)
 
     logging.info(f"Available inference providers : {providers}")

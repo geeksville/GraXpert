@@ -1,10 +1,10 @@
 import logging
 import os
+import sys
 import re
 import shutil
 import zipfile
 
-import onnxruntime as ort
 from appdirs import user_data_dir
 from minio import Minio
 from packaging import version
@@ -171,7 +171,6 @@ def validate_local_version(ai_models_dir, local_version):
 
 
 def get_execution_providers_ordered(gpu_acceleration=True):
-
     if gpu_acceleration:
         supported_providers = [
             (
@@ -197,12 +196,20 @@ def get_execution_providers_ordered(gpu_acceleration=True):
         supported_providers = ["CPUExecutionProvider"]
 
     result = []
-    available = ort.get_available_providers()
-    for provider in supported_providers:
-        if isinstance(provider, tuple):
-            if provider[0] in available:
-                result.append(provider)  # Append the entire tuple
-        else:
-            if provider in available:
-                result.append(provider)
-    return result
+    try:
+        import onnxruntime as ort    
+        available = ort.get_available_providers()
+        for provider in supported_providers:
+            if isinstance(provider, tuple):
+                if provider[0] in available:
+                    result.append(provider)  # Append the entire tuple
+            else:
+                if provider in available:
+                    result.append(provider)
+        return result
+    except Exception as e:
+        logging.error("Critical error!  The required ONNX Runtime (AI library) package is misconfigured.\n" \
+        "Please read the README.md to confirm that you've selected the correct build for your hardware.\n" \
+        "If you are using one of our prebuilt executables, please file a bug with the following information:\n"
+        "{}".format(e))
+        sys.exit(1)

@@ -8,7 +8,6 @@ from multiprocessing import shared_memory
 
 import cv2
 import numpy as np
-import onnxruntime as ort
 from astropy.stats import sigma_clipped_stats
 from pykrige.ok import OrdinaryKriging
 from scipy import interpolate, linalg
@@ -25,7 +24,6 @@ def gaussian_kernel(sigma=1.0, truncate=4.0):  # follow simulate skimage.filters
 
 
 def extract_background(in_imarray, background_points, interpolation_type, smoothing, downscale_factor, sample_size, RBF_kernel, spline_order, corr_type, ai_path, progress=None, ai_gpu_acceleration=True):
-
     num_colors = in_imarray.shape[-1]
 
     shm_imarray = None
@@ -72,6 +70,7 @@ def extract_background(in_imarray, background_points, interpolation_type, smooth
             progress.update(8)
 
         providers = get_execution_providers_ordered(ai_gpu_acceleration)
+        import onnxruntime as ort # Must be after get_execution_providers_ordered
         session = ort.InferenceSession(ai_path, providers=providers)
 
         logging.info(f"Providers : {providers}")

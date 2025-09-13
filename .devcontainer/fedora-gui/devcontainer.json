@@ -2,7 +2,7 @@
 	"name": "graxpert-devcontainer",
 
 	"build": {
-		"dockerfile": "../Dockerfile.fedora",
+		"dockerfile": "Dockerfile.fedora",
 		"args": {
 			"WORKSPACE": "${containerWorkspaceFolder}"
 		}

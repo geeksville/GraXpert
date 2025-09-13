@@ -3,7 +3,6 @@ import logging
 import time
 
 import numpy as np
-import onnxruntime as ort
 
 from graxpert.ai_model_handling import get_execution_providers_ordered
 from graxpert.application.app_events import AppEvents
@@ -12,7 +11,6 @@ from graxpert.ui.ui_events import UiEvents
 
 
 def denoise(image, ai_path, strength, batch_size=4, window_size=256, stride=128, progress=None, ai_gpu_acceleration=True):
-
     logging.info("Starting denoising")
 
     if batch_size < 1:
@@ -67,6 +65,7 @@ def denoise(image, ai_path, strength, batch_size=4, window_size=256, stride=128,
     output = copy.deepcopy(image)
 
     providers = get_execution_providers_ordered(ai_gpu_acceleration)
+    import onnxruntime as ort # Must be after get_execution_providers_ordered
     session = ort.InferenceSession(ai_path, providers=providers)
 
     logging.info(f"Available inference providers : {providers}")
