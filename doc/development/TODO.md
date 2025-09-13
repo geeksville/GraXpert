@@ -23,11 +23,13 @@ py -m pip install //host.lan/Data/dist/graxpert-3.2.0a0.dev1-py3-none-any.whl[cu
 pipx install dist/graxpert-3.2.0a0.dev2-py3-none-any.whl[rocm] 
 graxpert -cmd background-extraction -output /tmp/testout tests/test_images/real_crummy.fits
 
-todo: test fedora failure and use that as an example of try/catch gpu fallback
-todo: see if openvino can live together with cuda
-todo: basic os-x testing of dmg and python install
+!todo: test fedora failure and use that as an example of try/catch gpu fallback
+!todo: see if openvino can live together with cuda - NO IT CANT
+todo: basic os-x testing of dmg install
+todo: basic os-x testing of python install
 todo: windows testing of exe install (at least include cuda)
-todo: linux testing of appimage install
+!todo: linux testing of appimage install
+todo: test all release builds
 todo: pypi release
 todo: appimage etc... release
 

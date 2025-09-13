@@ -7,6 +7,11 @@ author_name = "GraXpert Development Team"
 author_email = "info@graxpert.com"
 author_full = f"{author_name} <{author_email}>"
 
+onnxruntime_cuda = "onnxruntime-gpu[cuda,cudnn]==1.22.0"
+onnxruntime_rocm = "onnxruntime-rocm==1.22.2.post1"
+onnxruntime_openvino = "onnxruntime-openvino==1.22.0"
+onnxruntime_cpuonly = "onnxruntime>=1.22.1"
+
 # Read the contents of your requirements.txt file
 with open("requirements.txt", "r", encoding="utf-8") as f:
     install_requires = f.read().splitlines()
@@ -32,6 +37,8 @@ def get_version_info():
     raise RuntimeError("Unable to find version and release strings in graxpert/version.py.")
 
 version, release = get_version_info()
+
+
 
 # Shared build options for setuptools.setup and cx_Freeze.setup
 setup_options = {
@@ -61,9 +68,6 @@ setup_options = {
     'long_description':long_description,
     'long_description_content_type':"text/markdown",
 
-    # Find all packages automatically (used by cx_Freeze and setuptools)
-    'packages': setuptools.find_packages(),
-
     # The dependencies that are required for the package to run
     'install_requires': install_requires,
 
@@ -71,13 +75,13 @@ setup_options = {
         # NOTE: the onnxruntime-gpu, -rocm and generic version are all **mutually exclusive** you must install only one, otherwise
         # you might get whichever was installed most recently.  Therefore we are now strict about dependencies (and moved onnxruntime
         # out of requirements.txt).  Users will need to pick one at install time.
-        "cuda": ["onnxruntime-gpu[cuda,cudnn]==1.22.0"], # FIXME test this on osx - it might be fine ; sys_platform != 'darwin'
-        "rocm": ["onnxruntime-rocm>=1.22.2"],
-        "openvino": ["onnxruntime-openvino>=1.22.0",
+        "cuda": [onnxruntime_cuda], # FIXME test this on osx - it might be fine ; sys_platform != 'darwin'
+        "rocm": [onnxruntime_rocm],
+        "openvino": [onnxruntime_openvino,
                      "openvino>=2025.3.0"],  # per https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#requirements
 
         # Not recommended, if you don't have a GPU just choose openvino and many newer Intel CPUs will at least be accelerated by that
-        "cpuonly": ["onnxruntime>=1.22.0"]
+        "cpuonly": [onnxruntime_cpuonly]
     },
 
     'package_data': {
@@ -120,6 +124,11 @@ setup_options = {
         "Natural Language :: German"
     ]
 }
+
+# We are careful to manually select which onnxruntime version we want based on target architecture
+# also exclude build time only tools
+packages = setuptools.find_packages(exclude=["tests"])
+print(f"Including the following packages: {packages}")
 
 # import cx_Freeze only when needed
 cx_freeze_commands = {'build_exe', 'bdist_msi', 'bdist_rpm', 'bdist_appimage', 'bdist_deb', 'bdist_mac', 'install' }
@@ -173,11 +182,13 @@ if cx_freeze_commands.intersection(sys.argv):
     }
 
     build_options = {
-        "includes": ["astropy.constants.codata2018", "astropy.constants.iau2015", "imageio.plugins.pillow", "skimage.draw.draw", "skimage.exposure.exposure", "skimage.filters._gaussian"],
+        "includes": ["astropy.constants.codata2018", "astropy.constants.iau2015", 
+                     "imageio.plugins.pillow", 
+                     "skimage.draw.draw", "skimage.exposure.exposure", "skimage.filters._gaussian"],
         "include_files": [
-            ["./img", "./lib/img"],
-            ["./graxpert-dark-blue.json", "./lib/graxpert-dark-blue.json"],
-            ["./locales/", "./lib/locales/"],
+            # ["./img", "./lib/img"],
+            # ["./graxpert-dark-blue.json", "./lib/graxpert-dark-blue.json"],
+            # ["./locales/", "./lib/locales/"],
             [os.path.join(astropy_path, "units", "format", "generic_parsetab.py"), "./lib/astropy/units/format/generic_parsetab.py"],
             [os.path.join(astropy_path, "units", "format", "generic_lextab.py"), "./lib/astropy/units/format/generic_lextab.py"],
         ],
@@ -187,6 +198,14 @@ if cx_freeze_commands.intersection(sys.argv):
         ],
         "include_msvcr": True
     }
+
+    # for exe builds we are careful to include the correct onnxruntime
+    if sys.platform == "win32":
+        build_options["excludes"] += ["onnxruntime", "onnxruntime-rocm"]
+        build_options["includes"] += ["onnxruntime-gpu"]
+    else:
+        build_options["excludes"] += ["onnxruntime-gpu", "onnxruntime-rocm"]
+        build_options["includes"] += ["onnxruntime"]
 
     # console allows passing in command line
     base = "Win32GUI" if sys.platform == "win32" else "console"
@@ -209,4 +228,5 @@ if cx_freeze_commands.intersection(sys.argv):
 
     cx_Freeze.setup(**setup_options)
 else:
+    setup_options["packages"] = packages
     setuptools.setup(**setup_options)
