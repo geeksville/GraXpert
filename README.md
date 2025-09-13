@@ -10,8 +10,8 @@ is an AI method which does not require any user input.
 
 Original                     |  Gradients removed with AI
 :-------------------------:|:-------------------------:
-![Original](img/NGC7000_original.jpg)   |  ![Gradients removed](img/NGC7000_processed.jpg)
-![Original](img/LDN1235_original.jpg)   |  ![Gradients removed](img/LDN1235_processed.jpg)
+![Original](https://raw.githubusercontent.com/Steffenhir/GraXpert/main/img/NGC7000_original.jpg)   |  ![Gradients removed](https://raw.githubusercontent.com/Steffenhir/GraXpert/main/img/NGC7000_processed.jpg)
+![Original](https://raw.githubusercontent.com/Steffenhir/GraXpert/main/img/LDN1235_original.jpg)   |  ![Gradients removed](https://raw.githubusercontent.com/Steffenhir/GraXpert/main/img/LDN1235_processed.jpg)
 
 
 **Homepage:** [https://www.graxpert.com](https://www.graxpert.com)  

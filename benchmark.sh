@@ -1,7 +1,8 @@
 set -e
 
 USEGPU=true
-GRAXPERT="python graxpert/main.py"
+#GRAXPERT="python graxpert/main.py"
+GRAXPERT="graxpert"
 
 export PYTHONPATH=.
 

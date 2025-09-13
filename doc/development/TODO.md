@@ -6,7 +6,7 @@ on graxpert.  You can probably ignore it
 # Changelist
 
 * Intel OpenVINO AI acceleration support added by FIXME (this should allow **much** faster processing on AVX2/VNNI capable Intel CPUs - including the N100/N300 CPUs often used in telescope miniPCs)
-* GPU acceleration for AMD GPUs (a 200x speedup vs CPU processing: 200 minute runs become 1 minute)
+* GPU acceleration for AMD GPUs (a 15x speedup vs CPU processing: 15 minute runs (on a 16 core CPU) become 1 minute (using less than 1 core))
 * In addition to the old package options, graxpert is now available on pypi for easy install with "pip install graxpert" on Windows, Mac-OS, or Linux.
 * Fix a number of resource leaks while the app was running.
 * Previously most failures inside of graxpert would cause the app to appear to hang.  This is now fixed, the app will exit with an exception message instead.  Please report any failures you encounter by filing a github issue at XXX.
@@ -18,6 +18,80 @@ PYTHONPATH=. python graxpert/main.py -cmd background-extraction -output /tmp/tes
 
 FIXME - follow in instructions for vc 14 runtime install, after enabling ssh
 py -m pip install //host.lan/Data/dist/graxpert-3.2.0a0.dev1-py3-none-any.whl[cuda]
+
+pipx install dist/graxpert-3.2.0a0.dev2-py3-none-any.whl[rocm] 
+graxpert -cmd background-extraction -output /tmp/testout tests/test_images/real_crummy.fits
+
+todo: test fedora failure and use that as an example of try/catch gpu fallback
+
+# prebuild wheels so that 
+
+user doesn't need this crap:
+
+      creating build\lib.win-amd64-cpython-313\pykrige\lib
+      copying src\pykrige\lib\__init__.py -> build\lib.win-amd64-cpython-313\pykrige\lib
+      running build_ext
+      building 'pykrige.lib.cok' extension
+      error: Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Build Tools": https://visualstudio.microsoft.com/visual-cpp-build-tools/
+      [end of output]
+
+
+Yes, your instinct is exactly right. Forcing users to install a full C++ build environment is a poor experience. The standard and correct way to solve this is to **build and distribute pre-compiled wheels** for Windows.
+
+A Python wheel (`.whl`) is a package format that can include pre-compiled extension modules (like the one `PyKrige` needs). When a Windows user runs `pip install graxpert`, pip will see the available wheels on PyPI, find the one that matches their Python version and system architecture (e.g., Python 3.11 on 64-bit Windows), and download it. This completely bypasses the need for a local compiler.
+
+-----
+
+### \#\# The Solution: Use `cibuildwheel`
+
+The best tool for this job is **`cibuildwheel`**. It's designed to be run in a CI/CD environment (like GitHub Actions) to automatically build and test wheels for all major operating systems and Python versions. Since you're already using GitHub, integrating this into your release workflow is the ideal solution.
+
+Here's how to adapt your existing release process:
+
+#### 1\. Modify Your GitHub Actions Workflow
+
+You'll need to add a new job to your `.github/workflows/build-release.yml` file. This job will run on a Windows virtual machine, install the necessary dependencies, and then use `cibuildwheel` to build the wheels for all the Python versions you support.
+
+Here is a job you can add to your workflow file:
+
+```yaml
+# In .github/workflows/build-release.yml
+
+jobs:
+  # ... (keep your existing build jobs) ...
+
+  build_windows_wheels:
+    name: Build Windows wheels
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11' # A version to run cibuildwheel itself
+
+      - name: Install cibuildwheel
+        run: python -m pip install cibuildwheel
+
+      - name: Build wheels
+        run: python -m cibuildwheel --output-dir wheelhouse
+        # This tells cibuildwheel to find your setup.py and build wheels
+        # for all supported Python versions on Windows.
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: windows-wheels
+          path: ./wheelhouse/*.whl
+```
+
+#### 2\. Publish to PyPI
+
+Finally, you'll need another job that runs after all the build jobs are complete. This job will download all the artifacts (your Linux AppImages, Mac builds, and now your new Windows wheels) and upload them all to PyPI using a tool like `twine`.
+
+This ensures that when a user on any OS runs `pip install`, the correct pre-built binary or wheel is available for them. Your `setup.py` is already well-configured to be used by `cibuildwheel`, so you likely won't need to change it.
 
 # why does covolution run slow (runs out of VRAM)?
 

@@ -177,7 +177,7 @@ def get_execution_providers_ordered(gpu_acceleration=True):
             (
                 "OpenVINOExecutionProvider",
                 {
-                    "device_type": "GPU",
+                    "device_type": "AUTO", # Will prefer dGPU, fallback to iGPU, NPU or CPU with extra Intel specific optimizations
                 },
             ),
             "ROCMExecutionProvider",

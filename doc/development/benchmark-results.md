@@ -4,13 +4,260 @@
 
 not yet tested
 
-## Intel GPU acceleration
+## OpenVino CPU+GPU+NPU acceleration
 
-not yet tested
+### Test 1: On an AMD CPU
+As expected no speedup over regular CPU version
+
+Test config:
+CPU: AMD Ryzen 9 5950X 16-Core Processor
+RAM: 32GB
+GPU: AMD Navi 31 [Radeon RX 7900 XT/7900 XTX/7900 GRE/7900M] (rev ce)
+
+kevinh@kdesktop:~/development/telescope/graxpert$ pipx install dist/graxpert-3.2.0a0.dev2-py3-none-any.whl[openvino]
+  installed package graxpert 3.2.0a0.dev2, installed using Python 3.12.3
+  These apps are now globally available
+    - graxpert
+done! ✨ 🌟 ✨
+kevinh@kdesktop:~/development/telescope/graxpert$ graxpert -cmd background-extraction -output /tmp/testout tests/test_images/real_crummy.fits
+2025-09-13 00:00:31,850 MainProcess root INFO     Starting GraXpert CLI, Background-Extraction, version: 3.2.0a0.dev2 release: 1
+2025-09-13 00:00:32,018 MainProcess root INFO     Using stored smoothing value 0.0.
+2025-09-13 00:00:32,018 MainProcess root INFO     Using stored correction type Subtraction.
+2025-09-13 00:00:32,018 MainProcess root INFO     Using stored gpu acceleration setting True.
+2025-09-13 00:00:32,519 MainProcess root INFO     Using AI version 1.0.1. You can overwrite this by providing the argument '-ai_version'
+2025-09-13 00:00:32,520 MainProcess root INFO     Excecuting background extraction with the following parameters:
+interpolation type - AI
+         smoothing - 0.0
+   correction type - Subtraction
+     AI model path - /home/kevinh/.local/share/GraXpert/bge-ai-models/1.0.1/model.onnx
+2025-09-13 00:00:33,287 MainProcess root INFO     Providers : [('OpenVINOExecutionProvider', {'device_type': 'AUTO'}), 'CPUExecutionProvider']
+2025-09-13 00:00:33,287 MainProcess root INFO     Used providers : ['OpenVINOExecutionProvider', 'CPUExecutionProvider']
+kevinh@kdesktop:~/development/telescope/graxpert$ ./benchmark.sh 
+Running background extraction...
+2025-09-13 00:01:18,767 MainProcess root INFO     Starting GraXpert CLI, Background-Extraction, version: 3.2.0a0.dev2 release: 1
+2025-09-13 00:01:18,933 MainProcess root INFO     Using stored smoothing value 0.0.
+2025-09-13 00:01:18,933 MainProcess root INFO     Using stored correction type Subtraction.
+2025-09-13 00:01:18,933 MainProcess root INFO     Using user-supplied gpu acceleration setting True.
+2025-09-13 00:01:19,436 MainProcess root INFO     Using AI version 1.0.1. You can overwrite this by providing the argument '-ai_version'
+2025-09-13 00:01:19,436 MainProcess root INFO     Excecuting background extraction with the following parameters:
+interpolation type - AI
+         smoothing - 0.0
+   correction type - Subtraction
+     AI model path - /home/kevinh/.local/share/GraXpert/bge-ai-models/1.0.1/model.onnx
+2025-09-13 00:01:20,171 MainProcess root INFO     Providers : [('OpenVINOExecutionProvider', {'device_type': 'AUTO'}), 'CPUExecutionProvider']
+2025-09-13 00:01:20,171 MainProcess root INFO     Used providers : ['OpenVINOExecutionProvider', 'CPUExecutionProvider']
+
+real	0m6.076s
+user	0m7.241s
+sys	0m1.315s
+Running deconvolution (object)...
+2025-09-13 00:01:24,886 MainProcess root INFO     Starting GraXpert CLI, Deconvolution Obj, version: 3.2.0a0.dev2 release: 1
+2025-09-13 00:01:24,939 MainProcess root INFO     Using stored deconvolution strength value 0.5.
+2025-09-13 00:01:24,939 MainProcess root INFO     Using stored deconvolution psfsize value 5.0.
+2025-09-13 00:01:24,939 MainProcess root INFO     Using stored batch size value 4.
+2025-09-13 00:01:24,939 MainProcess root INFO     Using user-supplied gpu acceleration setting True.
+2025-09-13 00:01:25,441 MainProcess root INFO     Using AI version 1.0.1. You can overwrite this by providing the argument '-ai_version'
+2025-09-13 00:01:25,442 MainProcess root INFO     Excecuting deconvolution on objects with the following parameters:
+AI model path - /home/kevinh/.local/share/GraXpert/deconvolution-object-ai-models/1.0.1/model.onnx
+deconvolution strength - 0.5
+deconvolution psfsize - 5.0
+2025-09-13 00:01:25,442 MainProcess root INFO     Starting deconvolution
+2025-09-13 00:01:25,442 MainProcess root INFO     Calculated normalized PSFsize value: 0.2951167728237792
+2025-09-13 00:01:26,587 MainProcess root INFO     Available inference providers : [('OpenVINOExecutionProvider', {'device_type': 'AUTO'}), 'CPUExecutionProvider']
+2025-09-13 00:01:26,587 MainProcess root INFO     Used inference providers : ['OpenVINOExecutionProvider', 'CPUExecutionProvider']
+2025-09-13 00:01:30,344 MainProcess root INFO     Progress: 1%
+2025-09-13 00:01:32,223 MainProcess root INFO     Progress: 3%
+2025-09-13 00:01:34,125 MainProcess root INFO     Progress: 4%
+2025-09-13 00:01:36,326 MainProcess root INFO     Progress: 6%
+2025-09-13 00:01:38,533 MainProcess root INFO     Progress: 7%
+2025-09-13 00:01:40,745 MainProcess root INFO     Progress: 9%
+2025-09-13 00:01:42,630 MainProcess root INFO     Progress: 10%
+2025-09-13 00:01:44,526 MainProcess root INFO     Progress: 12%
+2025-09-13 00:01:46,815 MainProcess root INFO     Progress: 14%
+2025-09-13 00:01:49,023 MainProcess root INFO     Progress: 15%
+2025-09-13 00:01:50,939 MainProcess root INFO     Progress: 17%
+2025-09-13 00:01:52,910 MainProcess root INFO     Progress: 18%
+2025-09-13 00:01:55,158 MainProcess root INFO     Progress: 20%
+2025-09-13 00:01:57,381 MainProcess root INFO     Progress: 21%
+2025-09-13 00:01:59,288 MainProcess root INFO     Progress: 23%
+2025-09-13 00:02:01,129 MainProcess root INFO     Progress: 25%
+2025-09-13 00:02:02,996 MainProcess root INFO     Progress: 26%
+2025-09-13 00:02:04,974 MainProcess root INFO     Progress: 28%
+2025-09-13 00:02:06,813 MainProcess root INFO     Progress: 29%
+2025-09-13 00:02:08,686 MainProcess root INFO     Progress: 31%
+2025-09-13 00:02:10,596 MainProcess root INFO     Progress: 32%
+2025-09-13 00:02:12,446 MainProcess root INFO     Progress: 34%
+2025-09-13 00:02:14,310 MainProcess root INFO     Progress: 35%
+2025-09-13 00:02:16,203 MainProcess root INFO     Progress: 37%
+2025-09-13 00:02:18,093 MainProcess root INFO     Progress: 39%
+2025-09-13 00:02:20,266 MainProcess root INFO     Progress: 40%
+2025-09-13 00:02:22,166 MainProcess root INFO     Progress: 42%
+2025-09-13 00:02:24,034 MainProcess root INFO     Progress: 43%
+2025-09-13 00:02:26,238 MainProcess root INFO     Progress: 45%
+2025-09-13 00:02:28,132 MainProcess root INFO     Progress: 46%
+2025-09-13 00:02:30,350 MainProcess root INFO     Progress: 48%
+2025-09-13 00:02:32,578 MainProcess root INFO     Progress: 50%
+2025-09-13 00:02:34,448 MainProcess root INFO     Progress: 51%
+2025-09-13 00:02:36,671 MainProcess root INFO     Progress: 53%
+2025-09-13 00:02:38,892 MainProcess root INFO     Progress: 54%
+2025-09-13 00:02:40,743 MainProcess root INFO     Progress: 56%
+2025-09-13 00:02:42,631 MainProcess root INFO     Progress: 57%
+2025-09-13 00:02:44,542 MainProcess root INFO     Progress: 59%
+2025-09-13 00:02:46,428 MainProcess root INFO     Progress: 60%
+2025-09-13 00:02:48,272 MainProcess root INFO     Progress: 62%
+2025-09-13 00:02:50,162 MainProcess root INFO     Progress: 64%
+2025-09-13 00:02:52,047 MainProcess root INFO     Progress: 65%
+2025-09-13 00:02:53,943 MainProcess root INFO     Progress: 67%
+2025-09-13 00:02:55,825 MainProcess root INFO     Progress: 68%
+2025-09-13 00:02:58,049 MainProcess root INFO     Progress: 70%
+2025-09-13 00:02:59,997 MainProcess root INFO     Progress: 71%
+2025-09-13 00:03:02,228 MainProcess root INFO     Progress: 73%
+2025-09-13 00:03:04,454 MainProcess root INFO     Progress: 75%
+2025-09-13 00:03:06,347 MainProcess root INFO     Progress: 76%
+2025-09-13 00:03:08,226 MainProcess root INFO     Progress: 78%
+2025-09-13 00:03:10,097 MainProcess root INFO     Progress: 79%
+2025-09-13 00:03:12,309 MainProcess root INFO     Progress: 81%
+2025-09-13 00:03:14,552 MainProcess root INFO     Progress: 82%
+2025-09-13 00:03:16,823 MainProcess root INFO     Progress: 84%
+2025-09-13 00:03:18,693 MainProcess root INFO     Progress: 85%
+2025-09-13 00:03:20,578 MainProcess root INFO     Progress: 87%
+2025-09-13 00:03:22,517 MainProcess root INFO     Progress: 89%
+2025-09-13 00:03:24,378 MainProcess root INFO     Progress: 90%
+2025-09-13 00:03:26,627 MainProcess root INFO     Progress: 92%
+2025-09-13 00:03:28,943 MainProcess root INFO     Progress: 93%
+2025-09-13 00:03:31,232 MainProcess root INFO     Progress: 95%
+2025-09-13 00:03:33,451 MainProcess root INFO     Progress: 96%
+2025-09-13 00:03:33,510 MainProcess root INFO     Finished deconvolution
+
+real	2m13.279s
+user	30m4.238s
+sys	0m3.152s
+Running denoising...
+2025-09-13 00:03:38,137 MainProcess root INFO     Starting GraXpert CLI, Denoising, version: 3.2.0a0.dev2 release: 1
+2025-09-13 00:03:38,190 MainProcess root INFO     Using stored denoise strength value 0.5.
+2025-09-13 00:03:38,191 MainProcess root INFO     Using stored batch size value 4.
+2025-09-13 00:03:38,191 MainProcess root INFO     Using user-supplied gpu acceleration setting True.
+2025-09-13 00:03:39,368 MainProcess root INFO     Using AI version 3.0.2. You can overwrite this by providing the argument '-ai_version'
+2025-09-13 00:03:39,369 MainProcess root INFO     Excecuting denoising with the following parameters:
+AI model path - /home/kevinh/.local/share/GraXpert/denoise-ai-models/3.0.2/model.onnx
+denoise strength - 0.5
+2025-09-13 00:03:39,369 MainProcess root INFO     Starting denoising
+2025-09-13 00:03:41,274 MainProcess root INFO     Available inference providers : [('OpenVINOExecutionProvider', {'device_type': 'AUTO'}), 'CPUExecutionProvider']
+2025-09-13 00:03:41,274 MainProcess root INFO     Used inference providers : ['OpenVINOExecutionProvider', 'CPUExecutionProvider']
+2025-09-13 00:03:55,251 MainProcess root INFO     Progress: 1%
+2025-09-13 00:04:04,501 MainProcess root INFO     Progress: 2%
+2025-09-13 00:04:13,946 MainProcess root INFO     Progress: 3%
+2025-09-13 00:04:23,322 MainProcess root INFO     Progress: 4%
+2025-09-13 00:04:32,848 MainProcess root INFO     Progress: 5%
+2025-09-13 00:04:37,693 MainProcess root INFO     Progress: 6%
+2025-09-13 00:04:47,868 MainProcess root INFO     Progress: 7%
+2025-09-13 00:04:57,753 MainProcess root INFO     Progress: 8%
+2025-09-13 00:05:07,638 MainProcess root INFO     Progress: 9%
+2025-09-13 00:05:17,102 MainProcess root INFO     Progress: 10%
+2025-09-13 00:05:26,265 MainProcess root INFO     Progress: 11%
+2025-09-13 00:05:30,851 MainProcess root INFO     Progress: 12%
+2025-09-13 00:05:40,037 MainProcess root INFO     Progress: 13%
+2025-09-13 00:05:49,413 MainProcess root INFO     Progress: 14%
+2025-09-13 00:05:58,863 MainProcess root INFO     Progress: 15%
+2025-09-13 00:06:08,024 MainProcess root INFO     Progress: 16%
+2025-09-13 00:06:12,645 MainProcess root INFO     Progress: 17%
+2025-09-13 00:06:22,058 MainProcess root INFO     Progress: 18%
+2025-09-13 00:06:31,288 MainProcess root INFO     Progress: 19%
+2025-09-13 00:06:40,649 MainProcess root INFO     Progress: 20%
+2025-09-13 00:06:49,847 MainProcess root INFO     Progress: 21%
+2025-09-13 00:06:59,183 MainProcess root INFO     Progress: 22%
+2025-09-13 00:07:03,893 MainProcess root INFO     Progress: 23%
+2025-09-13 00:07:13,304 MainProcess root INFO     Progress: 24%
+2025-09-13 00:07:22,505 MainProcess root INFO     Progress: 25%
+2025-09-13 00:07:31,831 MainProcess root INFO     Progress: 26%
+2025-09-13 00:07:41,022 MainProcess root INFO     Progress: 27%
+2025-09-13 00:07:50,270 MainProcess root INFO     Progress: 28%
+2025-09-13 00:07:55,011 MainProcess root INFO     Progress: 29%
+2025-09-13 00:08:04,421 MainProcess root INFO     Progress: 30%
+2025-09-13 00:08:14,169 MainProcess root INFO     Progress: 31%
+2025-09-13 00:08:24,114 MainProcess root INFO     Progress: 32%
+2025-09-13 00:08:33,899 MainProcess root INFO     Progress: 33%
+2025-09-13 00:08:38,428 MainProcess root INFO     Progress: 34%
+2025-09-13 00:08:47,617 MainProcess root INFO     Progress: 35%
+2025-09-13 00:08:56,776 MainProcess root INFO     Progress: 36%
+2025-09-13 00:09:06,026 MainProcess root INFO     Progress: 37%
+2025-09-13 00:09:15,207 MainProcess root INFO     Progress: 38%
+2025-09-13 00:09:24,759 MainProcess root INFO     Progress: 39%
+2025-09-13 00:09:29,352 MainProcess root INFO     Progress: 40%
+2025-09-13 00:09:38,889 MainProcess root INFO     Progress: 41%
+2025-09-13 00:09:48,306 MainProcess root INFO     Progress: 42%
+2025-09-13 00:09:57,710 MainProcess root INFO     Progress: 43%
+2025-09-13 00:10:07,153 MainProcess root INFO     Progress: 44%
+2025-09-13 00:10:16,448 MainProcess root INFO     Progress: 45%
+2025-09-13 00:10:21,193 MainProcess root INFO     Progress: 46%
+2025-09-13 00:10:30,811 MainProcess root INFO     Progress: 47%
+2025-09-13 00:10:40,306 MainProcess root INFO     Progress: 48%
+2025-09-13 00:10:49,611 MainProcess root INFO     Progress: 49%
+2025-09-13 00:10:59,275 MainProcess root INFO     Progress: 50%
+2025-09-13 00:11:04,127 MainProcess root INFO     Progress: 51%
+2025-09-13 00:11:13,252 MainProcess root INFO     Progress: 52%
+2025-09-13 00:11:22,677 MainProcess root INFO     Progress: 53%
+2025-09-13 00:11:32,093 MainProcess root INFO     Progress: 54%
+2025-09-13 00:11:41,534 MainProcess root INFO     Progress: 55%
+2025-09-13 00:11:51,118 MainProcess root INFO     Progress: 56%
+2025-09-13 00:11:55,753 MainProcess root INFO     Progress: 57%
+2025-09-13 00:12:05,287 MainProcess root INFO     Progress: 58%
+2025-09-13 00:12:14,595 MainProcess root INFO     Progress: 59%
+2025-09-13 00:12:23,962 MainProcess root INFO     Progress: 60%
+2025-09-13 00:12:33,593 MainProcess root INFO     Progress: 61%
+2025-09-13 00:12:38,498 MainProcess root INFO     Progress: 62%
+2025-09-13 00:12:47,819 MainProcess root INFO     Progress: 63%
+2025-09-13 00:12:57,705 MainProcess root INFO     Progress: 64%
+2025-09-13 00:13:06,872 MainProcess root INFO     Progress: 65%
+2025-09-13 00:13:16,056 MainProcess root INFO     Progress: 66%
+2025-09-13 00:13:25,120 MainProcess root INFO     Progress: 67%
+2025-09-13 00:13:29,668 MainProcess root INFO     Progress: 68%
+2025-09-13 00:13:38,703 MainProcess root INFO     Progress: 69%
+2025-09-13 00:13:47,808 MainProcess root INFO     Progress: 70%
+2025-09-13 00:13:57,052 MainProcess root INFO     Progress: 71%
+2025-09-13 00:14:06,226 MainProcess root INFO     Progress: 72%
+2025-09-13 00:14:15,444 MainProcess root INFO     Progress: 73%
+2025-09-13 00:14:20,162 MainProcess root INFO     Progress: 74%
+2025-09-13 00:14:29,218 MainProcess root INFO     Progress: 75%
+2025-09-13 00:14:38,319 MainProcess root INFO     Progress: 76%
+2025-09-13 00:14:47,382 MainProcess root INFO     Progress: 77%
+2025-09-13 00:14:56,394 MainProcess root INFO     Progress: 78%
+2025-09-13 00:15:00,932 MainProcess root INFO     Progress: 79%
+2025-09-13 00:15:10,029 MainProcess root INFO     Progress: 80%
+2025-09-13 00:15:19,093 MainProcess root INFO     Progress: 81%
+2025-09-13 00:15:28,148 MainProcess root INFO     Progress: 82%
+2025-09-13 00:15:37,273 MainProcess root INFO     Progress: 83%
+2025-09-13 00:15:46,333 MainProcess root INFO     Progress: 84%
+2025-09-13 00:15:51,035 MainProcess root INFO     Progress: 85%
+2025-09-13 00:16:00,339 MainProcess root INFO     Progress: 86%
+2025-09-13 00:16:09,579 MainProcess root INFO     Progress: 87%
+2025-09-13 00:16:18,638 MainProcess root INFO     Progress: 88%
+2025-09-13 00:16:27,698 MainProcess root INFO     Progress: 89%
+2025-09-13 00:16:36,939 MainProcess root INFO     Progress: 90%
+2025-09-13 00:16:41,469 MainProcess root INFO     Progress: 91%
+2025-09-13 00:16:50,719 MainProcess root INFO     Progress: 92%
+2025-09-13 00:16:59,786 MainProcess root INFO     Progress: 93%
+2025-09-13 00:17:09,000 MainProcess root INFO     Progress: 94%
+2025-09-13 00:17:18,209 MainProcess root INFO     Progress: 95%
+2025-09-13 00:17:22,781 MainProcess root INFO     Progress: 96%
+2025-09-13 00:17:31,874 MainProcess root INFO     Progress: 97%
+2025-09-13 00:17:40,910 MainProcess root INFO     Progress: 98%
+2025-09-13 00:17:46,211 MainProcess root INFO     Progress: 99%
+2025-09-13 00:17:46,536 MainProcess root INFO     Finished denoising
+
+real	14m13.062s
+user	216m52.417s
+sys	0m6.549s
+
 
 ## ROCm GPU acceleration
 
-Speedup from ROCm is 200x (1 minute runtime vs 200 minutes for CPU)
+Speedup from ROCm over CPU version is 200x (1 minute runtime vs 200 minutes for CPU)
+
+Test config:
+CPU: AMD Ryzen 9 5950X 16-Core Processor
+RAM: 32GB
+GPU: AMD Navi 31 [Radeon RX 7900 XT/7900 XTX/7900 GRE/7900M] (rev ce)
 
 no accel:
 
