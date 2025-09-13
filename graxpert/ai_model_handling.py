@@ -177,8 +177,10 @@ def get_execution_providers_ordered(gpu_acceleration=True):
             (
                 "OpenVINOExecutionProvider",
                 {
-                    "device_type": "AUTO", # Will prefer dGPU, fallback to iGPU, NPU or CPU with extra Intel specific optimizations
-                },
+                    # per https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#summary-of-options
+                    # "device_type": "HETERO:GPU,CPU,NPU AUTO:GPU,CPU,NPU MULTI:GPU,CPU,NPU", # Will prefer dGPU, fallback to iGPU, NPU or CPU with extra Intel specific optimizations
+                    "device_type": "AUTO:GPU,CPU", # Will prefer dGPU, fallback to iGPU, NPU or CPU with extra Intel specific optimizations
+                }
             ),
             "ROCMExecutionProvider",
             "DmlExecutionProvider",

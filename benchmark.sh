@@ -4,7 +4,7 @@ USEGPU=true
 #GRAXPERT="python graxpert/main.py"
 GRAXPERT="graxpert"
 
-export PYTHONPATH=.
+# export PYTHONPATH=.
 
 echo "Running background extraction..."
 time $GRAXPERT -cmd background-extraction -output /tmp/testout_bk -gpu $USEGPU tests/test_images/real_crummy.fits

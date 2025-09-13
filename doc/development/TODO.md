@@ -5,11 +5,12 @@ on graxpert.  You can probably ignore it
 
 # Changelist
 
-* Intel OpenVINO AI acceleration support added by FIXME (this should allow **much** faster processing on AVX2/VNNI capable Intel CPUs - including the N100/N300 CPUs often used in telescope miniPCs)
+* Intel OpenVINO AI acceleration support added by FIXME (this should allow **much** faster processing on AVX2/VNNI capable Intel CPUs - including the N100/N300 CPUs often used in telescope miniPCs).  On even a low-end N300 CPU (with a crummy iGPU) my benchmark test shows it as a 5x speedup.
 * GPU acceleration for AMD GPUs (a 15x speedup vs CPU processing: 15 minute runs (on a 16 core CPU) become 1 minute (using less than 1 core))
+* Failures in processing using GPU acceleration automatically failback to using the CPU instead and print a warning message to the logs.
 * In addition to the old package options, graxpert is now available on pypi for easy install with "pip install graxpert" on Windows, Mac-OS, or Linux.
 * Fix a number of resource leaks while the app was running.
-* Previously most failures inside of graxpert would cause the app to appear to hang.  This is now fixed, the app will exit with an exception message instead.  Please report any failures you encounter by filing a github issue at XXX.
+* Previously most failures inside of graxpert would cause the app to appear to hang.  This is now fixed, the app will exit with an exception message instead.  Please report any failures you encounter by filing a github issue at FIXME.
 * The -cli command line flag is no longer required (but will be ignored if you still use it).  Just pass in command line arguments as you wish (see README.md for documentation)
 
 # Test commands
@@ -23,6 +24,18 @@ pipx install dist/graxpert-3.2.0a0.dev2-py3-none-any.whl[rocm]
 graxpert -cmd background-extraction -output /tmp/testout tests/test_images/real_crummy.fits
 
 todo: test fedora failure and use that as an example of try/catch gpu fallback
+todo: see if openvino can live together with cuda
+todo: basic os-x testing of dmg and python install
+todo: windows testing of exe install (at least include cuda)
+todo: linux testing of appimage install
+todo: pypi release
+todo: appimage etc... release
+
+todo add https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#requirements windows instructions
+I think just:
+pip install openvino==2025.3.0
+but also these very painful user steps
+https://docs.openvino.ai/2025/get-started/install-openvino/install-openvino-archive-windows.html
 
 # prebuild wheels so that 
 

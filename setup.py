@@ -73,7 +73,8 @@ setup_options = {
         # out of requirements.txt).  Users will need to pick one at install time.
         "cuda": ["onnxruntime-gpu[cuda,cudnn]==1.22.0"], # FIXME test this on osx - it might be fine ; sys_platform != 'darwin'
         "rocm": ["onnxruntime-rocm>=1.22.2"],
-        "openvino": ["onnxruntime-openvino>=1.22.0"],
+        "openvino": ["onnxruntime-openvino>=1.22.0",
+                     "openvino>=2025.3.0"],  # per https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#requirements
 
         # Not recommended, if you don't have a GPU just choose openvino and many newer Intel CPUs will at least be accelerated by that
         "cpuonly": ["onnxruntime>=1.22.0"]
