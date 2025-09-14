@@ -1,6 +1,8 @@
 *-scaled.png
 __pycache__
 graxpert/s3_secrets.py
+graxpert/version.py*
+GraXpert-macos-x86_64.spec*
 build
 dist
 .idea
