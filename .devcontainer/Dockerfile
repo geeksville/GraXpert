@@ -27,8 +27,8 @@ RUN if ! id -u ${USERNAME} > /dev/null 2>&1; then \
 RUN wget -P /tmp https://repo.radeon.com/amdgpu-install/6.4.3/ubuntu/jammy/amdgpu-install_6.4.60403-1_all.deb
 RUN apt install -y --allow-downgrades --no-install-recommends /tmp/amdgpu-install_6.4.60403-1_all.deb
 RUN apt update
-# sudo usermod -a -G render,video $LOGNAME # Add the current user to the render and video groups
-RUN apt -y install rocm
+# Note: the github docker container is limited to 14GB max size, so we leave out the (enormous) rocm tools on that build
+# RUN apt -y install rocm
 
 # try to clean up space so our devcontainer can fit in the 14GB github action limit
 RUN apt-get clean 

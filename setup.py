@@ -77,6 +77,7 @@ setup_options = {
         # out of requirements.txt).  Users will need to pick one at install time.
         "cuda": [onnxruntime_cuda], # FIXME test this on osx - it might be fine ; sys_platform != 'darwin'
         "rocm": [onnxruntime_rocm],
+        "directml": ["onnxruntime-directml"],
         "openvino": [onnxruntime_openvino,
                      "openvino>=2025.3.0"],  # per https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#requirements
 
@@ -131,7 +132,7 @@ packages = setuptools.find_packages(exclude=["tests"])
 print(f"Including the following packages: {packages}")
 
 # import cx_Freeze only when needed
-cx_freeze_commands = {'build_exe', 'bdist_msi', 'bdist_rpm', 'bdist_appimage', 'bdist_deb', 'bdist_mac', 'install' }
+cx_freeze_commands = {'build_exe', 'bdist_msi', 'bdist_rpm', 'bdist_appimage', 'bdist_deb', 'bdist_mac', 'install', 'install_exe' }
 if cx_freeze_commands.intersection(sys.argv):
     import cx_Freeze
 
@@ -194,17 +195,18 @@ if cx_freeze_commands.intersection(sys.argv):
         ],
         "excludes": [
             "setuptools",
-            "twine"
+            "twine",
+            "build"
         ],
         "include_msvcr": True
     }
 
     # for exe builds we are careful to include the correct onnxruntime
     if sys.platform == "win32":
-        build_options["excludes"] += ["onnxruntime", "onnxruntime-rocm"]
-        build_options["includes"] += ["onnxruntime-gpu"]
+        build_options["excludes"] += ["onnxruntime", "onnxruntime-rocm", "onnxruntime-gpu"]
+        build_options["includes"] += ["onnxruntime-directml"]
     else:
-        build_options["excludes"] += ["onnxruntime-gpu", "onnxruntime-rocm"]
+        build_options["excludes"] += ["onnxruntime-gpu", "onnxruntime-rocm", "onnxruntime-directml"]
         build_options["includes"] += ["onnxruntime"]
 
     # console allows passing in command line

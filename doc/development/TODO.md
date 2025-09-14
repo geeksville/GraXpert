@@ -30,8 +30,13 @@ todo: basic os-x testing of python install
 todo: windows testing of exe install (at least include cuda)
 !todo: linux testing of appimage install
 todo: test all release builds
+fix python package license warnings
 todo: pypi release
 todo: appimage etc... release
+
+>  Please consider submitting your AppImage to AppImageHub, the crowd-sourced
+central directory of available AppImages, by opening a pull request
+at https://github.com/AppImage/appimage.github.io
 
 todo add https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#requirements windows instructions
 I think just:

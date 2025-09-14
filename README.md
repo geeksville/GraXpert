@@ -23,11 +23,14 @@ We are currently testing an optional cross-platform system for installing graxpe
 We do this via the the python [pypi.org](https://pypi.org/project/graxpert/) repository 'app-store.'  This is particularly important if you'd like to have GPU acceleration support for non Nvidia GPUs.  To install via this mechanism:
 
 1. Install [python](https://www.python.org/downloads/) runtime for your OS.  The default install should automatically include the python package manager 'pip'.
-2. At a shell prompt type the correct flavor of graxpert to install for your needs.  If you don't have any GPU acceleration we recommend installing the \[openvino\] version because that will provide some sizable (better than CPU only) acceleration on most modern Intel CPUs.
+2. At a shell prompt type the correct flavor of graxpert to install for your needs.
+
+FIXME, recommend directml for windows, FIXME for linux and FIXME for mac
 
 * **pip install graxpert\[cuda\]** - Use this if you have an Nvidia GPU
 * **pip install graxpert\[rocm\]** - Use this if you have an AMD GPU
-* **pip install graxpert\[openvino\]** - Use this if you don't have an advance GPU or don't know what you have
+* **pip install graxpert\[openvino\]** - Use this if you don't have an advanced GPU or don't know what you have (provides sizable acceleration on most modern Intel CPUs)
+* **pip install graxpert\[directml\]** - Use this if you want the Windows DirectML acceleration (not as fast as the options above but widely supported and easy to install)
 * **pip install graxpert\[cpuonly\]** - If you encounter bugs with any of our GPU versions, please file a bug and temporarily use this version (which excludes all GPU code)
 
 If you are an advanced python user and know about the 'pipx' tool, we recommend that you use that tool instead of pip for installs.

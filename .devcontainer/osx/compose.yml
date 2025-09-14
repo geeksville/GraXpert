@@ -20,6 +20,9 @@ services:
       - 8007:8006
       - 5900:5900/tcp
       - 5900:5900/udp
+
+      # SSH access to the macOS VM via port 2223 on the host
+      - 2223:22/tcp
     volumes:
       - ./macos-storage:/storage:z
       - ../..:/shared:z # Mount in macos with sudo -S mount_9p shared
