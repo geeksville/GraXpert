@@ -8,7 +8,7 @@ author_email = "info@graxpert.com"
 author_full = f"{author_name} <{author_email}>"
 
 onnxruntime_cuda = "onnxruntime-gpu[cuda,cudnn]==1.22.0"
-onnxruntime_rocm = "onnxruntime-rocm==1.21.0" # the runtime that goes with rocm 6.4.3
+onnxruntime_rocm = "onnxruntime-rocm==1.22.1" # the runtime that goes with rocm 7.0.1
 onnxruntime_openvino = "onnxruntime-openvino==1.22.0"
 onnxruntime_cpuonly = "onnxruntime>=1.22.1"
 

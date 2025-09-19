@@ -21,11 +21,11 @@ RUN if ! id -u ${USERNAME} > /dev/null 2>&1; then \
 # extra packages needed for debugging native crashes in python
 # RUN apt install -y python3-venv python3-dbg python3-tk-dbg
 
-# Install and run AMD ROCm GPU support.  Note: 6.4.2 is what is included in the Dockerfile.rocm container (which works)
+# Install and run AMD ROCm GPU support.  Tested and confirmed that 7.0.1 is better than the old 6.x releases
 # per https://rocm.docs.amd.com/projects/radeon/en/latest/docs/install/native_linux/install-onnx.html
 # and https://rocm.docs.amd.com/projects/install-on-linux/en/latest/install/quick-start.html
-RUN wget -P /tmp https://repo.radeon.com/amdgpu-install/6.4.3/ubuntu/jammy/amdgpu-install_6.4.60403-1_all.deb
-RUN apt install -y --allow-downgrades --no-install-recommends /tmp/amdgpu-install_6.4.60403-1_all.deb
+RUN wget -P /tmp https://repo.radeon.com/amdgpu-install/7.0.1/ubuntu/noble/amdgpu-install_7.0.1.70001-1_all.deb
+RUN apt install -y --allow-downgrades --no-install-recommends /tmp/amdgpu-install_7.0.1.70001-1_all.deb
 RUN apt update
 # Note: the github docker container is limited to 14GB max size, so we leave out the (enormous) rocm tools on that build
 # RUN apt -y install rocm
