@@ -188,6 +188,7 @@ sudo apt install rocm-libs
 pip install graxpert[openvino]
 pip install graxpert[rocm]
 pip install --user --break-system-packages ~/development/telescope/graxpert/dist/graxpert-3.2.0a0.dev1-py3-none-any.whl[rocm] -f https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.3/
+pipx install ~/development/telescope/graxpert/dist/graxpert-3.1.0rc2.dev250919173048-py3-none-any.whl[rocm] --pip-args="-f https://repo.radeon.com/rocm/manylinux/rocm-rel-6.4.3/"
 
 strace -o run.strace python3 -c "import onnxruntime; print(onnxruntime.get_available_providers())"
 

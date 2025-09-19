@@ -8,6 +8,11 @@
 		}
 	},
 	"postCreateCommand": "bash .devcontainer/post-create.sh",
+	"features": {
+		// Allow git use from inside container
+        "git": "os-provided"
+        // "sshd": "latest"
+    },	
 	"runArgs": [
 		"--privileged", // Allow full hw access from host, also allows writing core dump files
 		//"--network=host", // Use host network rather than our bridged container network
@@ -26,11 +31,6 @@
 		// NOTE: Not allowed in github CI devcontainers
 		"--userns=keep-id:uid=1000,gid=1000",		
 	],
-	"features": {
-		// Allow git use from inside container
-        "git": "os-provided"
-        // "sshd": "latest"
-    },
 	"mounts": [
 		// NOTE: None of the following are allowed in GitHub CI devcontainers
 
