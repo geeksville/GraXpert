@@ -2,6 +2,10 @@
 <img src="https://github.com/Steffenhir/GraXpert/blob/main/img/GraXpert_LOGO_Hauptvariante.png" width="500"/>
 </p>
 
+# WARNING: This is a test branch/pip build, you probably don't want it yet.
+For the time being you are better off with the install images from the graxpert
+homepage! for questions regarding this test build contact kevinh@geeksville.com.
+
 GraXpert is an astronomical image processing program for extracting and removing
 gradients in the background of your astrophotos.  We provide several methods traditional
 interpolation methods such as Radial Basis Functions (RBF), Splines and Kriging which require

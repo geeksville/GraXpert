@@ -12,7 +12,7 @@ sudo chown -R $USER ~/.local
 echo "Installing python requirements"
 pip3 install --user --break-system-packages -r requirements.txt
 
-pip3 install --user --break-system-packages cx_Freeze build
+pip3 install --user --break-system-packages cx_Freeze build twine
 
 # onnxruntime-gpu (moved to requirements.txt)
 # Moved into requirements.txt to match historic user expectations (though it adds about about 500MB to exe size)

@@ -20,7 +20,7 @@ PYTHONPATH=. python graxpert/main.py -cmd background-extraction -output /tmp/tes
 FIXME - follow in instructions for vc 14 runtime install, after enabling ssh
 py -m pip install //host.lan/Data/dist/graxpert-3.2.0a0.dev1-py3-none-any.whl[cuda]
 
-pipx install dist/graxpert-3.2.0a0.dev2-py3-none-any.whl[rocm] 
+
 graxpert -cmd background-extraction -output /tmp/testout tests/test_images/real_crummy.fits
 
 !todo: test fedora failure and use that as an example of try/catch gpu fallback
@@ -166,6 +166,7 @@ python -m build
 
 test pypi upload
 python3 -m twine upload --repository testpypi dist/graxpert-3.2.0a0-py3-none-any.whl dist/graxpert-3.2.0a0.tar.gz 
+python3 -m twine upload --repository testpypi dist/graxpert-3.2.0a0.dev4-py3-none-any.whl dist/graxpert-3.2.0a0.dev4.tar.gz 
 
 test install locally
 following works on fedora now if you manually install gcc.
