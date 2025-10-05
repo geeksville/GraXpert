@@ -5,7 +5,7 @@
 {
   "name": "macos",
   "service": "macos",
-  "forwardPorts": [8006],
+  "forwardPorts": [8007],
   "dockerComposeFile": "compose.yml",
 
   // dockur/windows will automount this as Z drive in Windows

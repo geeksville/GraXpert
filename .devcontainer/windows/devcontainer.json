@@ -1,8 +1,9 @@
 // This devcontainer allows testing under Windows in a VM as needed... (even if the host OS is Linux or OS-X)
+// To see windows GUI point your web browser at http://localhost:8008/ or use RDP to localhost:3389 (user: docker, password: docker)
 {
   "name": "windows",
   "service": "windows",
-  "forwardPorts": [8006],
+  "forwardPorts": [8008],
   "dockerComposeFile": "compose.yml",
 
   // dockur/windows will automount this as Z drive in Windows

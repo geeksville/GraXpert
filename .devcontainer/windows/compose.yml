@@ -5,7 +5,7 @@ services:
     container_name: windows
     environment:
       VERSION: "11"
-      USER_PORTS: 2222,3390,8006 # Needs to match port nums on the HOST side for podman user networking
+      USER_PORTS: 2222,3390,8008 # Needs to match port nums on the HOST side for podman user networking
       ARGUMENTS: "-cpu host,arch_capabilities=off" # Needed to let modern windows11 boot
       # RAM_SIZE: "4G" # RAM allocated to the Windows VM.
       # CPU_CORES: "2" # default CPU cores allocated to the Windows VM.
@@ -24,7 +24,7 @@ services:
     cap_add:
       - NET_ADMIN
     ports:
-      - 8006:8006
+      - 8008:8006
       # 3389 is already taken on my host OS (for its own RDP server)
       - 3390:3389/tcp
       - 3390:3389/udp
