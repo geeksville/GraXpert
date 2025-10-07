@@ -1,5 +1,15 @@
 name: testing
 
+env:
+  ai_s3_endpoint: ${{ secrets.AI_S3_ENDPOINT }}
+  ai_s3_access_key: ${{ secrets.AI_S3_ACCESS_KEY }}
+  ai_s3_secret_key: ${{ secrets.AI_S3_SECRET_KEY }}
+  ai_s3_bucket_name: ${{ secrets.AI_S3_BUCKET_NAME }}
+  ai_s3_bge_bucket_name: ${{ secrets.AI_S3_BGE_BUCKET_NAME }}
+  ai_s3_denoise_bucket_name: ${{ secrets.AI_S3_DENOISE_BUCKET_NAME }}
+  ai_s3_deconvolution_object_bucket_name: ${{ secrets.AI_S3_DECONVOLUTION_OBJECT_BUCKET_NAME }}
+  ai_s3_deconvolution_stars_bucket_name: ${{ secrets.AI_S3_DECONVOLUTION_STARS_BUCKET_NAME }}
+
 on: 
   workflow_dispatch:
   push:
@@ -16,7 +26,19 @@ jobs:
         with:
           python-version: '3.12'
       - name: checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for all tags
+      - name: configure ai s3 secrets
+        run: |
+          echo "endpoint = \"$ai_s3_endpoint\"" >> ./graxpert/s3_secrets.py
+          echo "ro_access_key = \"$ai_s3_access_key\"" >> ./graxpert/s3_secrets.py
+          echo "ro_secret_key = \"$ai_s3_secret_key\"" >> ./graxpert/s3_secrets.py
+          echo "bucket_name = \"$ai_s3_bucket_name\"" >> ./graxpert/s3_secrets.py
+          echo "bge_bucket_name = \"$ai_s3_bge_bucket_name\"" >> ./graxpert/s3_secrets.py
+          echo "denoise_bucket_name = \"$ai_s3_denoise_bucket_name\"" >> ./graxpert/s3_secrets.py
+          echo "deconvolution_object_bucket_name = \"$ai_s3_deconvolution_object_bucket_name\"" >> ./graxpert/s3_secrets.py
+          echo "deconvolution_stars_bucket_name = \"$ai_s3_deconvolution_stars_bucket_name\"" >> ./graxpert/s3_secrets.py
       - name: install dependencies
         run: |
           pip install -r requirements.txt
@@ -24,7 +46,7 @@ jobs:
           pip install pytest cx_Freeze build setuptools
       - name: patch version
         run: |
-          chmod u+x ./releng/patch_version.sh && \
+          chmod u+x ./releng/patch_version.sh
           ./releng/patch_version.sh
       - name: test version
         run: cat ./graxpert/version.py
@@ -35,8 +57,13 @@ jobs:
       - name: confirm old style linux bundle builds
         run: python ./setup.py install_exe --install-dir=./dist/GraXpert-linux
       - name: confirm AppImage builds
-        run: python ./setup.py bdist_appimage      
-
+        run: python ./setup.py bdist_appimage
+      - name: store artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: GraXpert-linux.AppImage
+          path: ./dist/graxpert-*.AppImage
+          retention-days: 5
 
   test-windows:
     runs-on: windows-2025
@@ -47,6 +74,18 @@ jobs:
           python-version: '3.12'
       - name: checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetch all history for all tags
+      - name: configure ai s3 secrets
+        run: |
+          echo "endpoint = \"$ai_s3_endpoint\"" >> ./graxpert/s3_secrets.py
+          echo "ro_access_key = \"$ai_s3_access_key\"" >> ./graxpert/s3_secrets.py
+          echo "ro_secret_key = \"$ai_s3_secret_key\"" >> ./graxpert/s3_secrets.py
+          echo "bucket_name = \"$ai_s3_bucket_name\"" >> ./graxpert/s3_secrets.py
+          echo "bge_bucket_name = \"$ai_s3_bge_bucket_name\"" >> ./graxpert/s3_secrets.py
+          echo "denoise_bucket_name = \"$ai_s3_denoise_bucket_name\"" >> ./graxpert/s3_secrets.py
+          echo "deconvolution_object_bucket_name = \"$ai_s3_deconvolution_object_bucket_name\"" >> ./graxpert/s3_secrets.py
+          echo "deconvolution_stars_bucket_name = \"$ai_s3_deconvolution_stars_bucket_name\"" >> ./graxpert/s3_secrets.py
       - name: install dependencies
         run: |
           pip install -r requirements.txt
@@ -59,32 +98,49 @@ jobs:
       - name: Run tests
         run: python -m pytest --import-mode=append tests/
       - name: confirm msi installer builds
-        run: python ./setup.py bdist_msi
+        run: |
+          python ./setup.py bdist_msi
 
   test-macos-x86_64:
     runs-on: macos-14
     steps:
       - name: checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetch all history for all tags
       # No longer needed on recent macos containers
       # - name: unbreak python in github actions
       #   run: |
       #    find /usr/local/bin -lname '*/Library/Frameworks/Python.framework/*' -delete
       #    sudo rm -rf /Library/Frameworks/Python.framework/
       #    brew install --force python3 && brew unlink python3 && brew unlink python3 && brew link --overwrite python3
+      - name: setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: configure ai s3 secrets
+        run: |
+          echo "endpoint = \"$ai_s3_endpoint\"" >> ./graxpert/s3_secrets.py
+          echo "ro_access_key = \"$ai_s3_access_key\"" >> ./graxpert/s3_secrets.py
+          echo "ro_secret_key = \"$ai_s3_secret_key\"" >> ./graxpert/s3_secrets.py
+          echo "bucket_name = \"$ai_s3_bucket_name\"" >> ./graxpert/s3_secrets.py
+          echo "bge_bucket_name = \"$ai_s3_bge_bucket_name\"" >> ./graxpert/s3_secrets.py
+          echo "denoise_bucket_name = \"$ai_s3_denoise_bucket_name\"" >> ./graxpert/s3_secrets.py
+          echo "deconvolution_object_bucket_name = \"$ai_s3_deconvolution_object_bucket_name\"" >> ./graxpert/s3_secrets.py
+          echo "deconvolution_stars_bucket_name = \"$ai_s3_deconvolution_stars_bucket_name\"" >> ./graxpert/s3_secrets.py
       - name: install dependencies
         run: |
-          brew install python-tk && \
-          pip3 install --break-system-packages -r requirements.txt
-          pip3 install --break-system-packages pytest cx_Freeze build setuptools
+          pip3 install --break-system-packages -r requirements.txt pytest cx_Freeze build setuptools
+          pip3 install --break-system-packages onnxruntime
       - name: patch version
         run: |
-          chmod u+x ./releng/patch_version.sh && \
+          chmod u+x ./releng/patch_version.sh
           ./releng/patch_version.sh
       - name: Run tests
         run: python3 -m pytest --import-mode=append tests/
       - name: test cx_Freeze osx installer build
-        run: python ./setup.py bdist_mac
+        run: python3 ./setup.py bdist_dmg
+          # build/graxpert-3.2.0a0.dev251007064412.app
 
   test-devcontainer:
     runs-on: ubuntu-24.04
@@ -95,6 +151,8 @@ jobs:
     steps:
       - name: checkout repository
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetch all history for all tags
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
@@ -110,5 +168,7 @@ jobs:
           imageName: ghcr.io/${{ github.repository_owner }}/graxpert-${{ github.ref_name }}-devcontainer
 
           runCmd: |
+            chmod u+x ./releng/patch_version.sh
+            ./releng/patch_version.sh
             pip install --user pytest
             python -m pytest --import-mode=append tests/

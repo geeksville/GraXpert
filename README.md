@@ -31,6 +31,7 @@ We do this via the the python [pypi.org](https://pypi.org/project/graxpert/) rep
 
 FIXME, recommend directml for windows, FIXME for linux and FIXME for mac
 
+* **pip install graxpert\[cpuonly\]** - Use this if you are on OS-X - it is poorly named, but it will still use the CoreML Apple GPU support
 * **pip install graxpert\[cuda\]** - Use this if you have an Nvidia GPU
 * **pip install graxpert\[rocm\]** - Use this if you have an AMD GPU
 * **pip install graxpert\[openvino\]** - Use this if you don't have an advanced GPU or don't know what you have (provides sizable acceleration on most modern Intel CPUs)

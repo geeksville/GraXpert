@@ -3,7 +3,7 @@
 {
   "name": "windows",
   "service": "windows",
-  "forwardPorts": [8008],
+  "forwardPorts": [8008,2222,3390],
   "dockerComposeFile": "compose.yml",
 
   // dockur/windows will automount this as Z drive in Windows

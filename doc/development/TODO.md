@@ -13,6 +13,13 @@ on graxpert.  You can probably ignore it
 * Previously most failures inside of graxpert would cause the app to appear to hang.  This is now fixed, the app will exit with an exception message instead.  Please report any failures you encounter by filing a github issue at FIXME.
 * The -cli command line flag is no longer required (but will be ignored if you still use it).  Just pass in command line arguments as you wish (see README.md for documentation)
 
+# Running github actions locally
+
+➜  gh extension install https://github.com/nektos/gh-act
+✓ Installed extension https://github.com/nektos/gh-act
+gh act -l pull_request
+gh act push -P ubuntu-24.04=catthehacker/ubuntu:act-latest
+
 # Test commands
 
 PYTHONPATH=. python graxpert/main.py -cmd background-extraction -output /tmp/testout tests/test_images/real_crummy.fits
@@ -112,6 +119,11 @@ jobs:
 Finally, you'll need another job that runs after all the build jobs are complete. This job will download all the artifacts (your Linux AppImages, Mac builds, and now your new Windows wheels) and upload them all to PyPI using a tool like `twine`.
 
 This ensures that when a user on any OS runs `pip install`, the correct pre-built binary or wheel is available for them. Your `setup.py` is already well-configured to be used by `cibuildwheel`, so you likely won't need to change it.
+
+# How to run Windows in a VM
+
+* After starting windows devcontainer install github CLI: https://cli.github.com
+* install "gh extension install nektos/gh-act"
 
 # why does covolution run slow (runs out of VRAM)?
 

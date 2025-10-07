@@ -132,7 +132,7 @@ packages = setuptools.find_packages(exclude=["tests"])
 print(f"Including the following packages: {packages}")
 
 # import cx_Freeze only when needed
-cx_freeze_commands = {'build_exe', 'bdist_msi', 'bdist_rpm', 'bdist_appimage', 'bdist_deb', 'bdist_mac', 'install', 'install_exe' }
+cx_freeze_commands = {'build_exe', 'bdist_msi', 'bdist_rpm', 'bdist_appimage', 'bdist_deb', 'bdist_mac', 'bdist_dmg', 'install', 'install_exe' }
 if cx_freeze_commands.intersection(sys.argv):
     import cx_Freeze
 
@@ -179,6 +179,9 @@ if cx_freeze_commands.intersection(sys.argv):
     }
 
     bdist_mac_options = {
+        'iconfile': './img/Icon.icns'
+    }
+    bdist_dmg_options = {
         # Not yet used
     }
 
@@ -204,7 +207,8 @@ if cx_freeze_commands.intersection(sys.argv):
     # for exe builds we are careful to include the correct onnxruntime
     if sys.platform == "win32":
         build_options["excludes"] += ["onnxruntime", "onnxruntime-rocm", "onnxruntime-gpu"]
-        build_options["includes"] += ["onnxruntime-directml"]
+        # FIXME temporarily disable until we see if it is needed on windows
+        # build_options["includes"] += ["onnxruntime-directml"]
     else:
         build_options["excludes"] += ["onnxruntime-gpu", "onnxruntime-rocm", "onnxruntime-directml"]
         build_options["includes"] += ["onnxruntime"]
@@ -225,7 +229,8 @@ if cx_freeze_commands.intersection(sys.argv):
         "bdist_rpm": bdist_rpm_options,
         "bdist_appimage": bdist_appimage_options,
         "bdist_deb": bdist_deb_options,
-        "bdist_mac": bdist_mac_options
+        "bdist_mac": bdist_mac_options,
+        "bdist_dmg": bdist_dmg_options
     }
 
     cx_Freeze.setup(**setup_options)

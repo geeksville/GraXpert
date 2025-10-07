@@ -61,7 +61,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for all tags
       - name: configure ai s3 secrets
         run: |
           echo "endpoint = \"$ai_s3_endpoint\"" >> ./graxpert/s3_secrets.py
@@ -87,11 +89,19 @@ jobs:
         run: |
           cd ./dist && \
           zip -r ./GraXpert-linux.zip ./GraXpert-linux
+      - name: build AppImage builds
+        run: python ./setup.py bdist_appimage     
       - name: store artifacts
         uses: actions/upload-artifact@v4
         with:
           name: GraXpert-linux.zip
           path: ./dist/GraXpert-linux.zip
+          retention-days: 5
+      - name: store artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: GraXpert-linux.AppImage
+          path: ./dist/graxpert-*.AppImage
           retention-days: 5
 
   build-windows:
@@ -102,7 +112,9 @@ jobs:
         with:
           python-version: '3.11'
       - name: checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for all tags
       - name: configure ai s3 secrets
         run: |
           $PSDefaultParameterValues['Out-File:Encoding']='UTF8' ; `
@@ -134,7 +146,9 @@ jobs:
     runs-on: macos-14
     steps:
       - name: checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for all tags
       - name: configure ai s3 secrets
         run: |
           echo "endpoint = \"$ai_s3_endpoint\"" >> ./graxpert/s3_secrets.py && \
@@ -148,7 +162,7 @@ jobs:
       - name: setup python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
       - name: install dependencies
         run: |
           brew install python-tk && \
@@ -203,7 +217,9 @@ jobs:
     runs-on: macos-13
     steps:
       - name: checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for all tags
       - name: configure ai s3 secrets
         run: |
           echo "endpoint = \"$ai_s3_endpoint\"" >> ./graxpert/s3_secrets.py && \
@@ -223,12 +239,12 @@ jobs:
       - name: setup python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
       - name: install dependencies
         run: |
-          brew install python-tk && \
-          pip3 install setuptools wheel pyinstaller --break-system-packages && \
-          pip3 install onnxruntime --break-system-packages && \
+          brew install python-tk
+          pip3 install setuptools wheel pyinstaller --break-system-packages
+          pip3 install onnxruntime --break-system-packages
           pip3 install -r requirements.txt --break-system-packages
       - name: patch version
         run: |
