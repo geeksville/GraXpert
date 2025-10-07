@@ -21,14 +21,15 @@ jobs:
   test-linux:
     runs-on: ubuntu-24.04
     steps:
-      - name: setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.12'
       - name: checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Fetch all history for all tags
+      - name: setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
       - name: configure ai s3 secrets
         run: |
           echo "endpoint = \"$ai_s3_endpoint\"" >> ./graxpert/s3_secrets.py
@@ -41,9 +42,8 @@ jobs:
           echo "deconvolution_stars_bucket_name = \"$ai_s3_deconvolution_stars_bucket_name\"" >> ./graxpert/s3_secrets.py
       - name: install dependencies
         run: |
-          pip install -r requirements.txt
           pip install onnxruntime # the github builders don't have GPUs anyways
-          pip install pytest cx_Freeze build setuptools
+          pip install -r requirements.txt pytest cx_Freeze build setuptools
       - name: patch version
         run: |
           chmod u+x ./releng/patch_version.sh
@@ -68,14 +68,15 @@ jobs:
   test-windows:
     runs-on: windows-2025
     steps:
-      - name: setup python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.12'
       - name: checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Fetch all history for all tags
+      - name: setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
       - name: configure ai s3 secrets
         run: |
           echo "endpoint = \"$ai_s3_endpoint\"" >> ./graxpert/s3_secrets.py
@@ -88,9 +89,8 @@ jobs:
           echo "deconvolution_stars_bucket_name = \"$ai_s3_deconvolution_stars_bucket_name\"" >> ./graxpert/s3_secrets.py
       - name: install dependencies
         run: |
-          pip install -r requirements.txt
           pip install onnxruntime-directml
-          pip install pytest cx_Freeze build setuptools
+          pip install -r requirements.txt pytest cx_Freeze build setuptools
       - name: patch version
         run: ./releng/patch_version.ps1
       - name: test version
@@ -100,12 +100,18 @@ jobs:
       - name: confirm msi installer builds
         run: |
           python ./setup.py bdist_msi
+      - name: store artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: GraXpert-*-win64.msi
+          path: ./dist/GraXpert-win64.msi
+          retention-days: 5
 
   test-macos-x86_64:
     runs-on: macos-14
     steps:
       - name: checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Fetch all history for all tags
       # No longer needed on recent macos containers
@@ -114,10 +120,6 @@ jobs:
       #    find /usr/local/bin -lname '*/Library/Frameworks/Python.framework/*' -delete
       #    sudo rm -rf /Library/Frameworks/Python.framework/
       #    brew install --force python3 && brew unlink python3 && brew unlink python3 && brew link --overwrite python3
-      - name: setup python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
       - name: configure ai s3 secrets
         run: |
           echo "endpoint = \"$ai_s3_endpoint\"" >> ./graxpert/s3_secrets.py
@@ -128,6 +130,11 @@ jobs:
           echo "denoise_bucket_name = \"$ai_s3_denoise_bucket_name\"" >> ./graxpert/s3_secrets.py
           echo "deconvolution_object_bucket_name = \"$ai_s3_deconvolution_object_bucket_name\"" >> ./graxpert/s3_secrets.py
           echo "deconvolution_stars_bucket_name = \"$ai_s3_deconvolution_stars_bucket_name\"" >> ./graxpert/s3_secrets.py
+      - name: setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
       - name: install dependencies
         run: |
           pip3 install --break-system-packages -r requirements.txt pytest cx_Freeze build setuptools
@@ -139,7 +146,9 @@ jobs:
       - name: Run tests
         run: python3 -m pytest --import-mode=append tests/
       - name: test cx_Freeze osx installer build
-        run: python3 ./setup.py bdist_dmg
+        run: |
+          python3 ./setup.py bdist_dmg
+          find . -name \*.dmg
           # build/graxpert-3.2.0a0.dev251007064412.app
 
   test-devcontainer:
@@ -150,7 +159,7 @@ jobs:
       packages: write 
     steps:
       - name: checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0 # Fetch all history for all tags
 
