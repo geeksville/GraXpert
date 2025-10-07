@@ -58,7 +58,13 @@ jobs:
         run: python ./setup.py install_exe --install-dir=./dist/GraXpert-linux
       - name: confirm AppImage builds
         run: python ./setup.py bdist_appimage
-      - name: store artifacts
+      - name: store python package
+        uses: actions/upload-artifact@v4
+        with:
+          name: GraXpert-linux.whl
+          path: ./dist/graxpert-*-none-any.whl
+          retention-days: 5
+      - name: store app image
         uses: actions/upload-artifact@v4
         with:
           name: GraXpert-linux.AppImage
@@ -98,13 +104,12 @@ jobs:
       - name: Run tests
         run: python -m pytest --import-mode=append tests/
       - name: confirm msi installer builds
-        run: |
-          python ./setup.py bdist_msi
+        run: python ./setup.py bdist_msi
       - name: store artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: GraXpert-*-win64.msi
-          path: ./dist/GraXpert-win64.msi
+          name: GraXpert-win64.msi
+          path: ./dist/GraXpert-*-win64.msi
           retention-days: 5
 
   test-macos-x86_64:
@@ -148,8 +153,12 @@ jobs:
       - name: test cx_Freeze osx installer build
         run: |
           python3 ./setup.py bdist_dmg
-          find . -name \*.dmg
-          # build/graxpert-3.2.0a0.dev251007064412.app
+      - name: store artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: GraXpert.dmg
+          path: ./build/graxpert-*.dmg
+          retention-days: 5
 
   test-devcontainer:
     runs-on: ubuntu-24.04
