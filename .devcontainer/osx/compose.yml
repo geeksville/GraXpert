@@ -9,8 +9,8 @@ services:
       GPU: "Y" # make GPU work?
       # VGA: "virtio-vga" # not supported      
 
-      # RAM_SIZE: "4G" defaults
-      # CPU_CORES: "2"      
+      RAM_SIZE: "8G" # defaults to 4G and 2 CPU
+      CPU_CORES: "4"      
     devices:
       - /dev/kvm
       - /dev/net/tun

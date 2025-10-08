@@ -33,12 +33,26 @@ FIXME, recommend directml for windows, FIXME for linux and FIXME for mac
 
 * **pip install graxpert\[cpuonly\]** - Use this if you are on OS-X - it is poorly named, but it will still use the CoreML Apple GPU support
 * **pip install graxpert\[cuda\]** - Use this if you have an Nvidia GPU
-* **pip install graxpert\[rocm\]** - Use this if you have an AMD GPU
+* **pip install graxpert\[rocm\]** --pip-args="-f https://repo.radeon.com/rocm/manylinux/rocm-rel-7.0/" - Use this if you have an AMD GPU
 * **pip install graxpert\[openvino\]** - Use this if you don't have an advanced GPU or don't know what you have (provides sizable acceleration on most modern Intel CPUs)
 * **pip install graxpert\[directml\]** - Use this if you want the Windows DirectML acceleration (not as fast as the options above but widely supported and easy to install)
 * **pip install graxpert\[cpuonly\]** - If you encounter bugs with any of our GPU versions, please file a bug and temporarily use this version (which excludes all GPU code)
 
 If you are an advanced python user and know about the 'pipx' tool, we recommend that you use that tool instead of pip for installs.
+
+## AMD GPU library installation
+
+If you are using an AMD GPU and the python packages above, you'll probably need to install the latest AMD GPU software.
+
+For Ubuntu linux the instructions run:
+```
+wget https://repo.radeon.com/amdgpu-install/7.0.1/ubuntu/noble/amdgpu-install_7.0.1.70001-1_all.deb
+sudo apt install ./amdgpu-install_7.0.1.70001-1_all.deb
+sudo apt update
+sudo apt install rocm python3-tk
+sudo usermod -a -G render,video $LOGNAME # Add the current user to the render and video groups
+```
+For other OSes see the instructions [here](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/install/quick-start.html).
 
 # Legacy Installation
 You can download the latest official release of GraXpert [here](https://github.com/Steffenhir/GraXpert/releases/latest). Select the correct version for your operating system. For macOS, we provide different versions
