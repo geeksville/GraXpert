@@ -335,13 +335,13 @@ jobs:
       - name: store python package
         uses: actions/upload-artifact@v4
         with:
-          name: GraXpert-linux.whl
+          name: GraXpert.whl
           path: ./dist/graxpert-*-none-any.whl
           retention-days: 5
 
   release:
     runs-on: ubuntu-24.04
-    needs: [python-pypi-publish]
+    needs: [build-linux-zip, build-windows, build-macos-x86_64, build-macos-arm64]
     steps:
       # - name: download linux deb
       #   uses: actions/download-artifact@v4
@@ -355,10 +355,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: GraXpert-linux.AppImage
-      - name: download python wheel
-        uses: actions/download-artifact@v4
-        with:
-          name: GraXpert.whl
       - name: download windows exe
         uses: actions/download-artifact@v4
         with:
@@ -377,7 +373,6 @@ jobs:
           files: |
             GraXpert-linux.zip
             GraXpert-linux.AppImage
-            GraXpert.whl
             GraXpert-${{github.ref_name}}-win64.msi
             GraXpert-macos-x86_64.dmg
             GraXpert-macos-arm64.dmg
