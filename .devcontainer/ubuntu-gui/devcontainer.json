@@ -10,8 +10,10 @@
 	"postCreateCommand": "bash .devcontainer/post-create.sh",
 	"features": {
 		// Allow git use from inside container
-        "git": "os-provided"
+        "git": "os-provided",
         // "sshd": "latest"
+
+  		"ghcr.io/devcontainers/features/github-cli:1": {}
     },	
 	"runArgs": [
 		"--privileged", // Allow full hw access from host, also allows writing core dump files
@@ -51,12 +53,18 @@
 		"type=tmpfs,destination=/tmp,tmpfs-mode=1777",
 
 		// If the user has a pypyrc file, expose it to this container (for publishing)
-		"source=${localEnv:HOME}/.pypirc,target=/home/vscode/.pypirc,type=bind,consistency=cached"
+		"source=${localEnv:HOME}/.pypirc,target=/home/vscode/.pypirc,type=bind,consistency=cached",
+
+		// Share gh login from host to container
+		"source=${localEnv:HOME}/.config/gh,target=/home/vscode/.config/gh,type=bind,consistency=cached"
 	],
 	"containerEnv": {
 		// Needed for X11 forwarding
 		"DISPLAY": "${localEnv:DISPLAY}",
 		"XAUTHORITY": "${localEnv:XAUTHORITY}",
+		
+		// Allows 'docker' commands to work inside the container via the host's podman
+		"DOCKER_HOST": "unix:///run/user/1000/podman/podman.sock",
 
 		"PYTHONDEVMODE": "1" // Enable Python dev mode for better debug output
 	},

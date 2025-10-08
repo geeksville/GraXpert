@@ -61,7 +61,7 @@ jobs:
       - name: store python package
         uses: actions/upload-artifact@v4
         with:
-          name: GraXpert-linux.whl
+          name: GraXpert.whl
           path: ./dist/graxpert-*-none-any.whl
           retention-days: 5
       - name: store app image

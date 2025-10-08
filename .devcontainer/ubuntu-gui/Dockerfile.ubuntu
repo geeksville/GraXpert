@@ -14,7 +14,7 @@ RUN apt update
 RUN apt-get -y install --no-install-recommends python3 python3-pip python3-venv python-is-python3
 
 # FIXME libgl1-mesa-glx is needed I think
-RUN apt install -y --no-install-recommends python3-setuptools python3-wheel python3-tk rpm alien  wget sudo git patchelf 
+RUN apt install -y --no-install-recommends python3-setuptools python3-wheel pipx python3-tk rpm alien  wget sudo git patchelf docker.io
 
 # Create a non-root user if one doesn't exist, and give it sudo rights
 RUN if ! id -u ${USERNAME} > /dev/null 2>&1; then \

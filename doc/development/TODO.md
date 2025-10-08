@@ -19,6 +19,7 @@ on graxpert.  You can probably ignore it
 ✓ Installed extension https://github.com/nektos/gh-act
 gh act -l pull_request
 gh act push -P ubuntu-24.04=catthehacker/ubuntu:act-latest
+gh act push -j build-linux-zip -P ubuntu-24.04=catthehacker/ubuntu:act-latest
 
 # Test commands
 
@@ -53,6 +54,8 @@ https://docs.openvino.ai/2025/get-started/install-openvino/install-openvino-arch
 
 # prebuild wheels so that 
 
+Use https://cibuildwheel.pypa.io/en/stable/setup/ to test locally
+
 user doesn't need this crap:
 
       creating build\lib.win-amd64-cpython-313\pykrige\lib
@@ -62,57 +65,7 @@ user doesn't need this crap:
       error: Microsoft Visual C++ 14.0 or greater is required. Get it with "Microsoft C++ Build Tools": https://visualstudio.microsoft.com/visual-cpp-build-tools/
       [end of output]
 
-
-Yes, your instinct is exactly right. Forcing users to install a full C++ build environment is a poor experience. The standard and correct way to solve this is to **build and distribute pre-compiled wheels** for Windows.
-
-A Python wheel (`.whl`) is a package format that can include pre-compiled extension modules (like the one `PyKrige` needs). When a Windows user runs `pip install graxpert`, pip will see the available wheels on PyPI, find the one that matches their Python version and system architecture (e.g., Python 3.11 on 64-bit Windows), and download it. This completely bypasses the need for a local compiler.
-
------
-
-### \#\# The Solution: Use `cibuildwheel`
-
-The best tool for this job is **`cibuildwheel`**. It's designed to be run in a CI/CD environment (like GitHub Actions) to automatically build and test wheels for all major operating systems and Python versions. Since you're already using GitHub, integrating this into your release workflow is the ideal solution.
-
-Here's how to adapt your existing release process:
-
-#### 1\. Modify Your GitHub Actions Workflow
-
-You'll need to add a new job to your `.github/workflows/build-release.yml` file. This job will run on a Windows virtual machine, install the necessary dependencies, and then use `cibuildwheel` to build the wheels for all the Python versions you support.
-
-Here is a job you can add to your workflow file:
-
-```yaml
-# In .github/workflows/build-release.yml
-
-jobs:
-  # ... (keep your existing build jobs) ...
-
-  build_windows_wheels:
-    name: Build Windows wheels
-    runs-on: windows-latest
-
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11' # A version to run cibuildwheel itself
-
-      - name: Install cibuildwheel
-        run: python -m pip install cibuildwheel
-
-      - name: Build wheels
-        run: python -m cibuildwheel --output-dir wheelhouse
-        # This tells cibuildwheel to find your setup.py and build wheels
-        # for all supported Python versions on Windows.
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: windows-wheels
-          path: ./wheelhouse/*.whl
-```
+But alas, the original pypi publisher of pkrige didn't include win64 binaries.  So on windows user better have a **full** install of python, including all the goo it needs to compile C code if needed.  Therefore: for windows only recomment pypi install for 'advanced' user
 
 #### 2\. Publish to PyPI
 

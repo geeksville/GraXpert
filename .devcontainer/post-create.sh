@@ -14,6 +14,12 @@ pip3 install --user --break-system-packages -r requirements.txt
 
 pip3 install --user --break-system-packages cx_Freeze build twine
 
+# if gh is available add the github actions extension
+if command -v gh &> /dev/null; then
+    echo "GitHub CLI (gh) found, installing 'act' extension..."
+    gh extension install https://github.com/nektos/gh-act
+fi
+
 # onnxruntime-gpu (moved to requirements.txt)
 # Moved into requirements.txt to match historic user expectations (though it adds about about 500MB to exe size)
 # without this added exe is already 500MB.
