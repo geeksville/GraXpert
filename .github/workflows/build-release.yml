@@ -104,7 +104,7 @@ jobs:
           path: ./dist/graxpert-*.AppImage
           retention-days: 5
 
-  build-python-pkg:
+  python-pypi-publish:
     runs-on: ubuntu-24.04
     environment:
       name: pypi
@@ -186,7 +186,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: GraXpert-${{github.ref_name}}-win64.msi
-          path: ./dist/GraXpert-${{github.ref_name}}-win64.msi
+          path: ./dist/GraXpert-*-win64.msi
           retention-days: 5
 
   build-macos-arm64:
@@ -224,8 +224,7 @@ jobs:
       - name: create GraXpert-macos-arm64 bundle
         # TODO migrate to cx_freeze
         run: |
-          pyinstaller \
-          ./GraXpert-macos-arm64.spec
+          pyinstaller ./GraXpert-macos-arm64.spec
       - name: install create-dmg
         run: brew install create-dmg
       - name: create .dmg
@@ -262,7 +261,7 @@ jobs:
           retention-days: 5
 
   build-macos-x86_64:
-    runs-on: macos-15
+    runs-on: macos-13
     steps:
       - name: checkout repository
         uses: actions/checkout@v4
@@ -287,7 +286,7 @@ jobs:
       - name: setup python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.11'
       - name: install dependencies
         run: |
           brew install python-tk
@@ -301,8 +300,7 @@ jobs:
       - name: create GraXpert-macos-x86_64 bundle
         # TODO migrate to cx_freeze
         run: |
-          pyinstaller \
-          ./GraXpert-macos-x86_64.spec
+          pyinstaller ./GraXpert-macos-x86_64.spec
       - name: install create-dmg
         run: brew install create-dmg
       - name: create .dmg
@@ -341,7 +339,7 @@ jobs:
   release:
     runs-on: ubuntu-24.04
     # needs: [build-linux-deb, build-linux-zip, build-windows, build-macos-x86_64]
-    needs: [build-linux-zip, build-windows, build-macos-x86_64, build-macos-arm64]
+    needs: [build-linux-zip, build-windows, build-macos-x86_64, build-macos-arm64, python-pypi-publish]
     steps:
       # - name: download linux deb
       #   uses: actions/download-artifact@v4
