@@ -104,8 +104,197 @@ jobs:
           path: ./dist/graxpert-*.AppImage
           retention-days: 5
 
-  build-python-pkg:
+  build-windows:
+    runs-on: windows-2025
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for all tags
+      - name: setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      - name: configure ai s3 secrets
+        run: |
+          $PSDefaultParameterValues['Out-File:Encoding']='UTF8' ; `
+          "endpoint = `"$env:ai_s3_endpoint`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
+          "ro_access_key = `"$env:ai_s3_access_key`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
+          "ro_secret_key = `"$env:ai_s3_secret_key`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
+          "bucket_name = `"$env:ai_s3_bucket_name`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
+          "bge_bucket_name = `"$env:ai_s3_bge_bucket_name`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
+          "denoise_bucket_name = `"$env:ai_s3_denoise_bucket_name`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
+          "deconvolution_object_bucket_name = `"$env:ai_s3_deconvolution_object_bucket_name`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
+          "deconvolution_stars_bucket_name = `"$env:ai_s3_deconvolution_stars_bucket_name`"" | Out-File -Append .\graxpert\s3_secrets.py
+      - name: install dependencies
+        run: |
+          pip install setuptools wheel cx_freeze==7.2.3
+          pip install onnxruntime-directml
+          pip install -r requirements.txt
+      - name: patch version
+        run: ./releng/patch_version.ps1
+      - name: create GraXpert-win64 bundle
+        run: python ./setup.py bdist_msi
+      - name: store artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: GraXpert-${{github.ref_name}}-win64.msi
+          path: ./dist/GraXpert-*-win64.msi
+          retention-days: 5
+
+  build-macos-arm64:
+    runs-on: macos-14
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for all tags
+      - name: configure ai s3 secrets
+        run: |
+          echo "endpoint = \"$ai_s3_endpoint\"" >> ./graxpert/s3_secrets.py && \
+          echo "ro_access_key = \"$ai_s3_access_key\"" >> ./graxpert/s3_secrets.py && \
+          echo "ro_secret_key = \"$ai_s3_secret_key\"" >> ./graxpert/s3_secrets.py && \
+          echo "bucket_name = \"$ai_s3_bucket_name\"" >> ./graxpert/s3_secrets.py && \
+          echo "bge_bucket_name = \"$ai_s3_bge_bucket_name\"" >> ./graxpert/s3_secrets.py && \
+          echo "denoise_bucket_name = \"$ai_s3_denoise_bucket_name\"" >> ./graxpert/s3_secrets.py && \
+          echo "deconvolution_object_bucket_name = \"$ai_s3_deconvolution_object_bucket_name\"" >> ./graxpert/s3_secrets.py && \
+          echo "deconvolution_stars_bucket_name = \"$ai_s3_deconvolution_stars_bucket_name\"" >> ./graxpert/s3_secrets.py
+      - name: setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+      - name: install dependencies
+        run: |
+          brew install python-tk && \
+          pip3 install setuptools wheel pyinstaller --break-system-packages && \
+          pip3 install onnxruntime --break-system-packages && \
+          pip3 install -r requirements.txt --break-system-packages
+      - name: patch version
+        run: |
+          chmod u+x ./releng/patch_version.sh && \
+          ./releng/patch_version.sh
+      - name: create GraXpert-macos-arm64 bundle
+        # TODO migrate to cx_freeze
+        run: |
+          pyinstaller ./GraXpert-macos-arm64.spec
+      - name: install create-dmg
+        run: brew install create-dmg
+      - name: create .dmg
+        run: |
+          # The currently available github macos runners have a bug that cause occasional create-dmg failures
+          # with the message "hdiutil: create failed - Resource busy"
+          # FIXME: Undo this nasty retry loop once the following issue gets figured out:
+          #        https://github.com/actions/runner-images/issues/7522#issuecomment-2534682126
+          max_tries=10
+          i=0
+          until create-dmg \
+            --no-internet-enable \
+            --volname "GraXpert-macos-arm64" \
+            --window-pos 50 50 \
+            --window-size 1920 1080 \
+            --icon-size 100 \
+            --icon "GraXpert.app" 200 190 \
+            --app-drop-link 400 190 \
+            "dist/GraXpert-macos-arm64.dmg" \
+            "dist/GraXpert.app/"
+          do
+              if [ $i -eq $max_tries ]
+              then
+                  echo 'Error: create-dmg did not succeed even after 10 tries.'
+                  exit 1
+              fi
+              ((i++))
+          done
+      - name: store artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: GraXpert-macos-arm64.dmg
+          path: ./dist/GraXpert-macos-arm64.dmg
+          retention-days: 5
+
+  build-macos-x86_64:
+    runs-on: macos-13
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for all tags
+      - name: configure ai s3 secrets
+        run: |
+          echo "endpoint = \"$ai_s3_endpoint\"" >> ./graxpert/s3_secrets.py && \
+          echo "ro_access_key = \"$ai_s3_access_key\"" >> ./graxpert/s3_secrets.py && \
+          echo "ro_secret_key = \"$ai_s3_secret_key\"" >> ./graxpert/s3_secrets.py && \
+          echo "bucket_name = \"$ai_s3_bucket_name\"" >> ./graxpert/s3_secrets.py && \
+          echo "bge_bucket_name = \"$ai_s3_bge_bucket_name\"" >> ./graxpert/s3_secrets.py && \
+          echo "denoise_bucket_name = \"$ai_s3_denoise_bucket_name\"" >> ./graxpert/s3_secrets.py && \
+          echo "deconvolution_object_bucket_name = \"$ai_s3_deconvolution_object_bucket_name\"" >> ./graxpert/s3_secrets.py && \
+          echo "deconvolution_stars_bucket_name = \"$ai_s3_deconvolution_stars_bucket_name\"" >> ./graxpert/s3_secrets.py
+      # github actions overwrites brew's python. Force it to reassert itself, by running in a separate step.
+      # - name: unbreak python in github actions
+      #   run: |
+      #    find /usr/local/bin -lname '*/Library/Frameworks/Python.framework/*' -delete
+      #    sudo rm -rf /Library/Frameworks/Python.framework/
+      #    brew install --force python3 && brew unlink python3 && brew unlink python3 && brew link --overwrite python3
+      - name: setup python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: install dependencies
+        run: |
+          brew install python-tk
+          pip3 install setuptools wheel pyinstaller --break-system-packages
+          pip3 install onnxruntime --break-system-packages
+          pip3 install -r requirements.txt --break-system-packages
+      - name: patch version
+        run: |
+          chmod u+x ./releng/patch_version.sh && \
+          ./releng/patch_version.sh
+      - name: create GraXpert-macos-x86_64 bundle
+        # TODO migrate to cx_freeze
+        run: |
+          pyinstaller ./GraXpert-macos-x86_64.spec
+      - name: install create-dmg
+        run: brew install create-dmg
+      - name: create .dmg
+        run: |
+          # The currently available github macos runners have a bug that cause occasional create-dmg failures
+          # with the message "hdiutil: create failed - Resource busy"
+          # FIXME: Undo this nasty retry loop once the following issue gets figured out:
+          #        https://github.com/actions/runner-images/issues/7522#issuecomment-2534682126
+          max_tries=10
+          i=0
+          until create-dmg \
+            --no-internet-enable \
+            --volname "GraXpert-macos-x86_64" \
+            --window-pos 50 50 \
+            --window-size 1920 1080 \
+            --icon-size 100 \
+            --icon "GraXpert.app" 200 190 \
+            --app-drop-link 400 190 \
+            "dist/GraXpert-macos-x86_64.dmg" \
+            "dist/GraXpert.app/"
+          do
+              if [ $i -eq $max_tries ]
+              then
+                  echo 'Error: create-dmg did not succeed even after 10 tries.'
+                  exit 1
+              fi
+              ((i++))
+          done            
+      - name: store artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: GraXpert-macos-x86_64.dmg
+          path: ./dist/GraXpert-macos-x86_64.dmg
+          retention-days: 5
+
+
+  python-pypi-publish:
     runs-on: ubuntu-24.04
+    # Must run after all the other builds succeed, because we don't want to publish a broken package to PyPI
+    needs: [build-linux-zip, build-windows, build-macos-x86_64, build-macos-arm64]
     environment:
       name: pypi
       url: https://pypi.org/p/graxpert
@@ -150,198 +339,9 @@ jobs:
           path: ./dist/graxpert-*-none-any.whl
           retention-days: 5
 
-  build-windows:
-    runs-on: windows-2025
-    steps:
-      - name: checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Fetch all history for all tags
-      - name: setup python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-          cache: 'pip'
-      - name: configure ai s3 secrets
-        run: |
-          $PSDefaultParameterValues['Out-File:Encoding']='UTF8' ; `
-          "endpoint = `"$env:ai_s3_endpoint`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
-          "ro_access_key = `"$env:ai_s3_access_key`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
-          "ro_secret_key = `"$env:ai_s3_secret_key`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
-          "bucket_name = `"$env:ai_s3_bucket_name`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
-          "bge_bucket_name = `"$env:ai_s3_bge_bucket_name`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
-          "denoise_bucket_name = `"$env:ai_s3_denoise_bucket_name`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
-          "deconvolution_object_bucket_name = `"$env:ai_s3_deconvolution_object_bucket_name`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
-          "deconvolution_stars_bucket_name = `"$env:ai_s3_deconvolution_stars_bucket_name`"" | Out-File -Append .\graxpert\s3_secrets.py
-      - name: install dependencies
-        run: |
-          pip install setuptools wheel cx_freeze==7.2.3
-          pip install onnxruntime-directml
-          pip install -r requirements.txt
-      - name: patch version
-        run: ./releng/patch_version.ps1
-      - name: create GraXpert-win64 bundle
-        run: python ./setup.py bdist_msi
-      - name: store artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: GraXpert-${{github.ref_name}}-win64.msi
-          path: ./dist/GraXpert-${{github.ref_name}}-win64.msi
-          retention-days: 5
-
-  build-macos-arm64:
-    runs-on: macos-14
-    steps:
-      - name: checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Fetch all history for all tags
-      - name: configure ai s3 secrets
-        run: |
-          echo "endpoint = \"$ai_s3_endpoint\"" >> ./graxpert/s3_secrets.py && \
-          echo "ro_access_key = \"$ai_s3_access_key\"" >> ./graxpert/s3_secrets.py && \
-          echo "ro_secret_key = \"$ai_s3_secret_key\"" >> ./graxpert/s3_secrets.py && \
-          echo "bucket_name = \"$ai_s3_bucket_name\"" >> ./graxpert/s3_secrets.py && \
-          echo "bge_bucket_name = \"$ai_s3_bge_bucket_name\"" >> ./graxpert/s3_secrets.py && \
-          echo "denoise_bucket_name = \"$ai_s3_denoise_bucket_name\"" >> ./graxpert/s3_secrets.py && \
-          echo "deconvolution_object_bucket_name = \"$ai_s3_deconvolution_object_bucket_name\"" >> ./graxpert/s3_secrets.py && \
-          echo "deconvolution_stars_bucket_name = \"$ai_s3_deconvolution_stars_bucket_name\"" >> ./graxpert/s3_secrets.py
-      - name: setup python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-          cache: 'pip'
-      - name: install dependencies
-        run: |
-          brew install python-tk && \
-          pip3 install setuptools wheel pyinstaller --break-system-packages && \
-          pip3 install onnxruntime --break-system-packages && \
-          pip3 install -r requirements.txt --break-system-packages
-      - name: patch version
-        run: |
-          chmod u+x ./releng/patch_version.sh && \
-          ./releng/patch_version.sh
-      - name: create GraXpert-macos-arm64 bundle
-        # TODO migrate to cx_freeze
-        run: |
-          pyinstaller \
-          ./GraXpert-macos-arm64.spec
-      - name: install create-dmg
-        run: brew install create-dmg
-      - name: create .dmg
-        run: |
-          # The currently available github macos runners have a bug that cause occasional create-dmg failures
-          # with the message "hdiutil: create failed - Resource busy"
-          # FIXME: Undo this nasty retry loop once the following issue gets figured out:
-          #        https://github.com/actions/runner-images/issues/7522#issuecomment-2534682126
-          max_tries=10
-          i=0
-          until create-dmg \
-            --no-internet-enable \
-            --volname "GraXpert-macos-arm64" \
-            --window-pos 50 50 \
-            --window-size 1920 1080 \
-            --icon-size 100 \
-            --icon "GraXpert.app" 200 190 \
-            --app-drop-link 400 190 \
-            "dist/GraXpert-macos-arm64.dmg" \
-            "dist/GraXpert.app/"
-          do
-              if [ $i -eq $max_tries ]
-              then
-                  echo 'Error: create-dmg did not succeed even after 10 tries.'
-                  exit 1
-              fi
-              ((i++))
-          done
-      - name: store artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: GraXpert-macos-arm64.dmg
-          path: ./dist/GraXpert-macos-arm64.dmg
-          retention-days: 5
-
-  build-macos-x86_64:
-    runs-on: macos-15
-    steps:
-      - name: checkout repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0 # Fetch all history for all tags
-      - name: configure ai s3 secrets
-        run: |
-          echo "endpoint = \"$ai_s3_endpoint\"" >> ./graxpert/s3_secrets.py && \
-          echo "ro_access_key = \"$ai_s3_access_key\"" >> ./graxpert/s3_secrets.py && \
-          echo "ro_secret_key = \"$ai_s3_secret_key\"" >> ./graxpert/s3_secrets.py && \
-          echo "bucket_name = \"$ai_s3_bucket_name\"" >> ./graxpert/s3_secrets.py && \
-          echo "bge_bucket_name = \"$ai_s3_bge_bucket_name\"" >> ./graxpert/s3_secrets.py && \
-          echo "denoise_bucket_name = \"$ai_s3_denoise_bucket_name\"" >> ./graxpert/s3_secrets.py && \
-          echo "deconvolution_object_bucket_name = \"$ai_s3_deconvolution_object_bucket_name\"" >> ./graxpert/s3_secrets.py && \
-          echo "deconvolution_stars_bucket_name = \"$ai_s3_deconvolution_stars_bucket_name\"" >> ./graxpert/s3_secrets.py
-      # github actions overwrites brew's python. Force it to reassert itself, by running in a separate step.
-      # - name: unbreak python in github actions
-      #   run: |
-      #    find /usr/local/bin -lname '*/Library/Frameworks/Python.framework/*' -delete
-      #    sudo rm -rf /Library/Frameworks/Python.framework/
-      #    brew install --force python3 && brew unlink python3 && brew unlink python3 && brew link --overwrite python3
-      - name: setup python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: install dependencies
-        run: |
-          brew install python-tk
-          pip3 install setuptools wheel pyinstaller --break-system-packages
-          pip3 install onnxruntime --break-system-packages
-          pip3 install -r requirements.txt --break-system-packages
-      - name: patch version
-        run: |
-          chmod u+x ./releng/patch_version.sh && \
-          ./releng/patch_version.sh
-      - name: create GraXpert-macos-x86_64 bundle
-        # TODO migrate to cx_freeze
-        run: |
-          pyinstaller \
-          ./GraXpert-macos-x86_64.spec
-      - name: install create-dmg
-        run: brew install create-dmg
-      - name: create .dmg
-        run: |
-          # The currently available github macos runners have a bug that cause occasional create-dmg failures
-          # with the message "hdiutil: create failed - Resource busy"
-          # FIXME: Undo this nasty retry loop once the following issue gets figured out:
-          #        https://github.com/actions/runner-images/issues/7522#issuecomment-2534682126
-          max_tries=10
-          i=0
-          until create-dmg \
-            --no-internet-enable \
-            --volname "GraXpert-macos-x86_64" \
-            --window-pos 50 50 \
-            --window-size 1920 1080 \
-            --icon-size 100 \
-            --icon "GraXpert.app" 200 190 \
-            --app-drop-link 400 190 \
-            "dist/GraXpert-macos-x86_64.dmg" \
-            "dist/GraXpert.app/"
-          do
-              if [ $i -eq $max_tries ]
-              then
-                  echo 'Error: create-dmg did not succeed even after 10 tries.'
-                  exit 1
-              fi
-              ((i++))
-          done            
-      - name: store artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: GraXpert-macos-x86_64.dmg
-          path: ./dist/GraXpert-macos-x86_64.dmg
-          retention-days: 5
-
   release:
     runs-on: ubuntu-24.04
-    # needs: [build-linux-deb, build-linux-zip, build-windows, build-macos-x86_64]
-    needs: [build-linux-zip, build-windows, build-macos-x86_64, build-macos-arm64]
+    needs: [python-pypi-publish]
     steps:
       # - name: download linux deb
       #   uses: actions/download-artifact@v4
