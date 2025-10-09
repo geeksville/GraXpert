@@ -4,7 +4,7 @@ services:
     image: docker.io/dockurr/macos
     container_name: macos
     environment:
-      VERSION: "13"
+      VERSION: "13" # the graxpert build targets 13 for intel
       
       GPU: "Y" # make GPU work?
       # VGA: "virtio-vga" # not supported      
