@@ -128,7 +128,9 @@ setup_options = {
 
 # We are careful to manually select which onnxruntime version we want based on target architecture
 # also exclude build time only tools
-packages = setuptools.find_packages(exclude=["tests"])
+# we can't exclude tests because that apparently breaks runtime numpy for the windows msi build
+# exclude=["tests"]
+packages = setuptools.find_packages()
 print(f"Including the following packages: {packages}")
 
 # import cx_Freeze only when needed
