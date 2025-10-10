@@ -10,7 +10,9 @@ services:
       # VGA: "virtio-vga" # not supported      
 
       RAM_SIZE: "8G" # defaults to 4G and 2 CPU
-      CPU_CORES: "4"      
+      CPU_CORES: "4"
+      NETWORK: "user" # try to use bridge networking to make ssh access work
+      USER_PORTS: "22"
     devices:
       - /dev/kvm
       - /dev/net/tun
