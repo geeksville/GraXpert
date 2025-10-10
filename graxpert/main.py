@@ -28,7 +28,8 @@ except ImportError:
     print("  For Debian/Ubuntu: sudo apt-get install python3-tk", file=sys.stderr)
     print("  For Fedora:        sudo dnf install python3-tkinter", file=sys.stderr)
     print("  For Arch Linux:    sudo pacman -S tk", file=sys.stderr)
-    print("  For Windows/OS-X:  It should be included with your Python installation by default.", file=sys.stderr)
+    print("  For OS-X:          brew install python-tk", file=sys.stderr)
+    print("  For Windows:       It should be included with your Python installation by default.", file=sys.stderr)
     sys.exit(1) # Exit with error
 
 

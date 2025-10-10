@@ -29,9 +29,7 @@ We do this via the the python [pypi.org](https://pypi.org/project/graxpert/) rep
 1. Install [python](https://www.python.org/downloads/) runtime for your OS.  The default install should automatically include the python package manager 'pip'.
 2. At a shell prompt type the correct flavor of graxpert to install for your needs.
 
-FIXME, recommend directml for windows, FIXME for linux and FIXME for mac
-
-* **pip install graxpert\[cpuonly\]** - Use this if you are on OS-X - it is poorly named, but it will still use the CoreML Apple GPU support
+* **brew install pipx python-tk@3.13; pipx install --python python3.13 graxpert\\\[cpuonly\\\]** - Use this if you are on OS-X - it is poorly named, but it will still use the CoreML Apple GPU support
 * **pip install graxpert\[cuda\]** - Use this if you have an Nvidia GPU
 * **pip install graxpert\[rocm\]** --pip-args="-f https://repo.radeon.com/rocm/manylinux/rocm-rel-7.0/" - Use this if you have an AMD GPU
 * **pip install graxpert\[openvino\]** - Use this if you don't have an advanced GPU or don't know what you have (provides sizable acceleration on most modern Intel CPUs)
@@ -148,7 +146,7 @@ For macOS, we have to install tkinter separately.
 We use the version provided by brew because it is newer
 and solves issues with macOS Sonoma. Please use the version matching with your Python version.
 """
-brew install python-tk@3.10
+brew install python-tk
 ```
 
 ## Option 2: Automatic setup with devcontainers
