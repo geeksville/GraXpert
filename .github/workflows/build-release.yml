@@ -294,7 +294,7 @@ jobs:
   python-pypi-publish:
     runs-on: ubuntu-24.04
     # Must run after all the other builds succeed, because we don't want to publish a broken package to PyPI
-    needs: [build-linux-zip, build-windows, build-macos-x86_64, build-macos-arm64]
+    needs: [build-linux-zip, build-windows]
     environment:
       name: pypi
       url: https://pypi.org/p/graxpert
