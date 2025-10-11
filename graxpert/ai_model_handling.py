@@ -4,6 +4,7 @@ import sys
 import re
 import shutil
 import zipfile
+from multiprocessing import Process, Queue
 
 from appdirs import user_data_dir
 from minio import Minio
@@ -214,6 +215,33 @@ def get_execution_providers_ordered(gpu_acceleration=True):
         "{}".format(e))
         sys.exit(1)
 
+
+def run_in_process(fn: callable):
+    """Run a function in a separate process and return the result or raise an exception."""
+
+    q = Queue()
+
+    # Create a closure to call fn and put the result in the queue    
+    def wrapped():
+        try:
+            r = fn()
+        except Exception as e:
+            r = e # return the exception to the main process
+        q.put(r)
+
+    p = Process(target=wrapped, name: "ai-worker")
+    p.start()
+    p.join()
+
+    if p.exitcode != 0:
+        raise RuntimeError(f"worker process crashed with exit code {p.exitcode}.")
+
+    result = q.get()
+    if isinstance(result, Exception):
+        raise result
+    return result
+
+
 # Provides a mutable session context that can swap out different sessions if needed
 class SessionContext:
     model_name: str
@@ -232,13 +260,24 @@ class SessionContext:
         logging.info(f"Used inference providers for {model_name}: {self.session.get_providers()}")
 
 
+    def __run_low(self, model_args: dict, gpu_acceleration: bool = True) -> any:
+        """Run the ONNX model using the specified execution provider."""
+
+        # if we are using a GPU the ONNX runtimes might crash due to native bugs (ROCm)
+        # so run in a separate process just in case
+        fn = lambda: self.session.run(None, model_args)
+        if gpu_acceleration:
+            return run_in_process(fn)
+        else:
+            return fn()
+
     def run(self, model_args: dict) -> any:
         """Run the ONNX model using the specified execution provider."""
 
         providers = self.session.get_providers()
         gpu_acceleration = len(providers) > 1 or providers[0] != "CPUExecutionProvider"
         try:
-            result = self.session.run(None, model_args)
+            result = self.__run_low(model_args, gpu_acceleration)
         except Exception as e:
             if not gpu_acceleration:
                 raise  # Rethrow, the failure occurred with the regular CPU model also - show error dialog
@@ -246,7 +285,7 @@ class SessionContext:
             logging.warning(f"Error running model, falling back to CPU only: {e}")
             import onnxruntime as ort
             self.session = ort.InferenceSession(self.model_name, providers=get_execution_providers_ordered(False))
-            result = self.session.run(None, model_args)
+            result = self.__run_low(model_args, False)
 
         # all graxpert results are in the first array index
         return result[0]

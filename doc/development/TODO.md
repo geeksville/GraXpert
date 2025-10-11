@@ -12,6 +12,9 @@ on graxpert.  You can probably ignore it
 * Fix a number of resource leaks while the app was running.
 * Previously most failures inside of graxpert would cause the app to appear to hang.  This is now fixed, the app will exit with an exception message instead.  Please report any failures you encounter by filing a github issue at FIXME.
 * The -cli command line flag is no longer required (but will be ignored if you still use it).  Just pass in command line arguments as you wish (see README.md for documentation)
+* If AI models crash in GPU code (even a native crash) the app will auto-fallback to a CPU based implementation.
+* MacOS CoreML acceleration is now (again) used for most models.  For the time being denoise falls back to a CPU implementation on MacOS.
+
 
 # Running github actions locally
 
