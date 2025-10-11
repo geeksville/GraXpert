@@ -11,3 +11,4 @@ python-venv
 env_graxpert/
 graxpert.egg-info
 .pypirc
+testimage.fit*

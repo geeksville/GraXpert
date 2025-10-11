@@ -21,6 +21,7 @@ gh act -l pull_request
 gh act push -P ubuntu-24.04=catthehacker/ubuntu:act-latest
 gh act push -j build-linux-zip -P ubuntu-24.04=catthehacker/ubuntu:act-latest
 
+
 # Test commands
 
 PYTHONPATH=. python graxpert/main.py -cmd background-extraction -output /tmp/testout tests/test_images/real_crummy.fits

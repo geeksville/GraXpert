@@ -3,7 +3,7 @@ import logging
 
 import numpy as np
 
-from graxpert.ai_model_handling import get_execution_providers_ordered
+from graxpert.ai_model_handling import SessionContext
 from graxpert.application.app_events import AppEvents
 from graxpert.application.eventbus import eventbus
 
@@ -63,13 +63,6 @@ def deconvolve(image, ai_path, strength, psfsize, batch_size=4, window_size=512,
 
     output = copy.deepcopy(image)
 
-    providers = get_execution_providers_ordered(ai_gpu_acceleration)
-    import onnxruntime as ort # Must be after get_execution_providers_ordered
-    session = ort.InferenceSession(ai_path, providers=providers)
-
-    logging.info(f"Available inference providers : {providers}")
-    logging.info(f"Used inference providers : {session.get_providers()}")
-
     cancel_flag = False
 
     def cancel_listener(event):
@@ -78,6 +71,8 @@ def deconvolve(image, ai_path, strength, psfsize, batch_size=4, window_size=512,
 
     eventbus.add_listener(AppEvents.CANCEL_PROCESSING, cancel_listener)
 
+    # allow persistent changes to gpu_accel in case of failure
+    context = SessionContext(ai_path, gpu_acceleration=ai_gpu_acceleration)
     last_progress = 0
     for b in range(0, ith * itw + batch_size, batch_size):
 
@@ -129,9 +124,10 @@ def deconvolve(image, ai_path, strength, psfsize, batch_size=4, window_size=512,
         strenght_p = np.full(shape=(input_tiles.shape[0], 1), fill_value=strength, dtype=np.float32)
         conds = np.concatenate([sigma, strenght_p], axis=-1)
         if type == "Obj" and "1.0.0" in ai_path:
-            session_result = session.run(None, {"gen_input_image": input_tiles, "sigma": sigma, "strenght": strenght_p})[0]
+            model_args = {"gen_input_image": input_tiles, "sigma": sigma, "strenght": strenght_p}
         else:
-            session_result = session.run(None, {"gen_input_image": input_tiles, "params": conds})[0]
+            model_args = {"gen_input_image": input_tiles, "params": conds}
+        session_result = context.run(model_args)
         for e in session_result:
             output_tiles.append(e)
 

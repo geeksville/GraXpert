@@ -213,3 +213,40 @@ def get_execution_providers_ordered(gpu_acceleration=True):
         "If you are using one of our prebuilt executables, please file a bug with the following information:\n"
         "{}".format(e))
         sys.exit(1)
+
+# Provides a mutable session context that can swap out different sessions if needed
+class SessionContext:
+    model_name: str
+    session: any # onnxruntime.InferenceSession
+
+    def __init__(self, model_name: str,  gpu_acceleration: bool = True):
+        """Initialize the ONNX model session with the specified execution provider."""
+
+        providers = get_execution_providers_ordered(gpu_acceleration)
+        logging.info(f"Available inference providers : {providers}")
+
+        import onnxruntime as ort # Must be after get_execution_providers_ordered (so it can check for missing libs)
+        self.session = ort.InferenceSession(model_name, providers=providers)
+        self.model_name = model_name
+
+        logging.info(f"Used inference providers for {model_name}: {self.session.get_providers()}")
+
+
+    def run(self, model_args: dict) -> any:
+        """Run the ONNX model using the specified execution provider."""
+
+        providers = self.session.get_providers()
+        gpu_acceleration = len(providers) > 1 or providers[0] != "CPUExecutionProvider"
+        try:
+            result = self.session.run(None, model_args)
+        except Exception as e:
+            if not gpu_acceleration:
+                raise  # Rethrow, the failure occurred with the regular CPU model also - show error dialog
+
+            logging.warning(f"Error running model, falling back to CPU only: {e}")
+            import onnxruntime as ort
+            self.session = ort.InferenceSession(self.model_name, providers=get_execution_providers_ordered(False))
+            result = self.session.run(None, model_args)
+
+        # all graxpert results are in the first array index
+        return result[0]
