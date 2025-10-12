@@ -178,11 +178,12 @@ jobs:
       - name: cx_Freeze osx installer build
         run: |
           python3 ./setup.py bdist_dmg
+          mv ./build/graxpert-*.dmg ./build/graxpert-macos-arm64.dmg
       - name: store artifacts
         uses: actions/upload-artifact@v4
         with:
           name: GraXpert-macos-arm64.dmg
-          path: ./build/*.dmg
+          path: ./build/graxpert-macos-arm64.dmg
           retention-days: 5
 
   build-macos-x86_64:
@@ -223,12 +224,13 @@ jobs:
           ./releng/patch_version.sh
       - name: osx installer build
         run: |
-          python3 ./setup.py bdist_dmg     
+          python3 ./setup.py bdist_dmg
+          mv ./build/graxpert-*.dmg ./build/graxpert-macos-x86_64.dmg
       - name: store artifacts
         uses: actions/upload-artifact@v4
         with:
           name: GraXpert-macos-x86_64.dmg
-          path: ./build/*.dmg
+          path: ./build/graxpert-macos-x86_64.dmg
           retention-days: 5
 
   python-pypi-publish:
@@ -282,6 +284,8 @@ jobs:
   release:
     runs-on: ubuntu-24.04
     needs: [build-linux-zip, build-windows, build-macos-x86_64, build-macos-arm64]
+    permissions:
+      contents: write
     steps:
       # fetch all the artifacts into our build directory
       - name: download all artifacts
@@ -295,8 +299,7 @@ jobs:
         with:
           files: |
             GraXpert-linux.zip
-            GraXpert-linux.AppImage
-            GraXpert-${{github.ref_name}}-win64.msi
-            GraXpert-macos-x86_64.dmg
-            GraXpert-macos-arm64.dmg
+            graxpert-*.AppImage
+            GraXpert-*-win64.msi
+            graxpert-*.dmg
       #     graxpert_${{github.ref_name}}-1_amd64.deb
