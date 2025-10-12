@@ -283,30 +283,13 @@ jobs:
     runs-on: ubuntu-24.04
     needs: [build-linux-zip, build-windows, build-macos-x86_64, build-macos-arm64]
     steps:
-      # - name: download linux deb
-      #   uses: actions/download-artifact@v4
-      #   with:
-      #     name: graxpert_${{github.ref_name}}-1_amd64.deb
-      - name: download linux zip
-        uses: actions/download-artifact@v4
+      # fetch all the artifacts into our build directory
+      - name: download all artifacts
+        uses: actions/download-artifact@v5
         with:
-          name: GraXpert-linux.zip
-      - name: download linux appimage
-        uses: actions/download-artifact@v4
-        with:
-          name: GraXpert-linux.AppImage
-      - name: download windows exe
-        uses: actions/download-artifact@v4
-        with:
-          name: GraXpert-${{github.ref_name}}-win64.msi
-      - name: download macos x86_64 artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: GraXpert-macos-x86_64.dmg
-      - name: download macos arm artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: GraXpert-macos-arm64.dmg
+          merge-multiple: true
+      - name: list artifact contents
+        run: ls -R
       - name: create release
         uses: softprops/action-gh-release@v2
         with:
