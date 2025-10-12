@@ -216,7 +216,8 @@ if cx_freeze_commands.intersection(sys.argv):
         build_options["includes"] += ["onnxruntime"]
 
     # console allows passing in command line
-    base = "Win32GUI" if sys.platform == "win32" else "console"
+    # base = "gui" if sys.platform == "win32" else "console"
+    base = "console" # Trying this default for all platforms, to see if we can see log messages on Windows
 
     executables = [cx_Freeze.Executable("./graxpert/main.py", base=base,
                                         icon="./img/Icon", # leave off extension so it will be autocorrected for any OS
