@@ -167,7 +167,7 @@ jobs:
           cache: 'pip'
       - name: install dependencies
         run: |
-          pip3 install --user --break-system-packages --no-warn-script-location -r requirements.txt pytest=8.4.2 build cx_Freeze>=8.4.0 setuptools
+          pip3 install --user --break-system-packages --no-warn-script-location -r requirements.txt pytest==8.4.2 build cx_Freeze>=8.4.0 setuptools
           pip3 install --user --break-system-packages --no-warn-script-location onnxruntime
       - name: patch version
         run: |

@@ -229,7 +229,7 @@ def run_in_process(fn: callable):
             r = e # return the exception to the main process
         q.put(r)
 
-    p = Process(target=wrapped, name: "ai-worker")
+    p = Process(target=wrapped, name="ai-worker")
     p.start()
     p.join()
 

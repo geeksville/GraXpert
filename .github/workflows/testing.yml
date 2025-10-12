@@ -85,14 +85,15 @@ jobs:
           cache: 'pip'
       - name: configure ai s3 secrets
         run: |
-          echo "endpoint = \"$ai_s3_endpoint\"" >> ./graxpert/s3_secrets.py
-          echo "ro_access_key = \"$ai_s3_access_key\"" >> ./graxpert/s3_secrets.py
-          echo "ro_secret_key = \"$ai_s3_secret_key\"" >> ./graxpert/s3_secrets.py
-          echo "bucket_name = \"$ai_s3_bucket_name\"" >> ./graxpert/s3_secrets.py
-          echo "bge_bucket_name = \"$ai_s3_bge_bucket_name\"" >> ./graxpert/s3_secrets.py
-          echo "denoise_bucket_name = \"$ai_s3_denoise_bucket_name\"" >> ./graxpert/s3_secrets.py
-          echo "deconvolution_object_bucket_name = \"$ai_s3_deconvolution_object_bucket_name\"" >> ./graxpert/s3_secrets.py
-          echo "deconvolution_stars_bucket_name = \"$ai_s3_deconvolution_stars_bucket_name\"" >> ./graxpert/s3_secrets.py
+          $PSDefaultParameterValues['Out-File:Encoding']='UTF8' ; `
+          "endpoint = `"$env:ai_s3_endpoint`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
+          "ro_access_key = `"$env:ai_s3_access_key`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
+          "ro_secret_key = `"$env:ai_s3_secret_key`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
+          "bucket_name = `"$env:ai_s3_bucket_name`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
+          "bge_bucket_name = `"$env:ai_s3_bge_bucket_name`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
+          "denoise_bucket_name = `"$env:ai_s3_denoise_bucket_name`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
+          "deconvolution_object_bucket_name = `"$env:ai_s3_deconvolution_object_bucket_name`"" | Out-File -Append .\graxpert\s3_secrets.py ; `
+          "deconvolution_stars_bucket_name = `"$env:ai_s3_deconvolution_stars_bucket_name`"" | Out-File -Append .\graxpert\s3_secrets.py
       - name: install dependencies
         run: |
           pip install onnxruntime-directml
@@ -142,7 +143,7 @@ jobs:
           cache: 'pip'
       - name: install dependencies
         run: |
-          pip3 install --user --break-system-packages --no-warn-script-location -r requirements.txt pytest=8.4.2 build cx_Freeze>=8.4.0 setuptools
+          pip3 install --user --break-system-packages --no-warn-script-location -r requirements.txt pytest==8.4.2 build cx_Freeze>=8.4.0 setuptools
           pip3 install --user --break-system-packages --no-warn-script-location onnxruntime
       - name: patch version
         run: |
