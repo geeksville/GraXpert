@@ -135,15 +135,15 @@ jobs:
           echo "denoise_bucket_name = \"$ai_s3_denoise_bucket_name\"" >> ./graxpert/s3_secrets.py
           echo "deconvolution_object_bucket_name = \"$ai_s3_deconvolution_object_bucket_name\"" >> ./graxpert/s3_secrets.py
           echo "deconvolution_stars_bucket_name = \"$ai_s3_deconvolution_stars_bucket_name\"" >> ./graxpert/s3_secrets.py
-      - name: setup python
+      - name: setup python  
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: '3.13'
           cache: 'pip'
       - name: install dependencies
         run: |
-          pip3 install --break-system-packages -r requirements.txt pytest cx_Freeze build setuptools
-          pip3 install --break-system-packages onnxruntime
+          pip3 install --user --break-system-packages --no-warn-script-location -r requirements.txt pytest=8.4.2 build cx_Freeze>=8.4.0 setuptools
+          pip3 install --user --break-system-packages --no-warn-script-location onnxruntime
       - name: patch version
         run: |
           chmod u+x ./releng/patch_version.sh

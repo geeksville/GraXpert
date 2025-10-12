@@ -3,6 +3,10 @@ services:
   macos:
     image: docker.io/dockurr/macos
     container_name: macos
+
+    # Try host mode networking to see if faster
+    network_mode: "host"
+
     environment:
       VERSION: "13" # the graxpert build targets 13 for intel
       
@@ -11,7 +15,7 @@ services:
 
       RAM_SIZE: "8G" # defaults to 4G and 2 CPU
       CPU_CORES: "4"
-      NETWORK: "user" # try to use bridge networking to make ssh access work
+      NETWORK: "user" # use bridge networking to make ssh access work
       USER_PORTS: "22"
     devices:
       - /dev/kvm

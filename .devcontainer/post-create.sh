@@ -37,5 +37,5 @@ fi
 # NOTE! rocm support only seems to be enabled currently in Ubuntu, not bare Debian!
 pip3 uninstall -y --break-system-packages onnxruntime onnxruntime-gpu onnxruntime-rocm
 # switching to the rocm runtime apparently requires **removing** the onnxruntime package (which came from a different repo?)
-pip3 install --user --force --break-system-packages numpy==2.2.6 onnxruntime-rocm==1.22.1 -f https://repo.radeon.com/rocm/manylinux/rocm-rel-7.0/
+pip3 install --user --force --break-system-packages numpy>=2.0.2,<=2.2.6 onnxruntime-rocm==1.22.1 -f https://repo.radeon.com/rocm/manylinux/rocm-rel-7.0/
 pip3 cache purge
