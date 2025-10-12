@@ -109,6 +109,7 @@ setup_options = {
         # Supported Python versions: List all versions you test against.
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
 
         # Operating System: Specify which OSs are supported.
         "Operating System :: Microsoft :: Windows",
@@ -208,16 +209,17 @@ if cx_freeze_commands.intersection(sys.argv):
 
     # for exe builds we are careful to include the correct onnxruntime
     if sys.platform == "win32":
-        build_options["excludes"] += ["onnxruntime", "onnxruntime-rocm", "onnxruntime-gpu"]
-        # FIXME temporarily disable until we see if it is needed on windows
+        pass
+        # on windows we default to whatever onnx lib was installed at build time
+        # build_options["excludes"] += ["onnxruntime", "onnxruntime-rocm", "onnxruntime-gpu"]
         # build_options["includes"] += ["onnxruntime-directml"]
     else:
         build_options["excludes"] += ["onnxruntime-gpu", "onnxruntime-rocm", "onnxruntime-directml"]
         build_options["includes"] += ["onnxruntime"]
 
     # console allows passing in command line
-    # base = "gui" if sys.platform == "win32" else "console"
-    base = "console" # Trying this default for all platforms, to see if we can see log messages on Windows
+    base = "gui" if sys.platform == "win32" else "console"
+    # base = "console" # if debugging on windows (or trying to use the exe in a script, then this is probably better)
 
     executables = [cx_Freeze.Executable("./graxpert/main.py", base=base,
                                         icon="./img/Icon", # leave off extension so it will be autocorrected for any OS
