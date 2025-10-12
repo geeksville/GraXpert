@@ -5,10 +5,11 @@ on graxpert.  You can probably ignore it...
 
 # Changelist
 
-* Intel OpenVINO AI acceleration support added by FIXME (this should allow **much** faster processing on AVX2/VNNI capable Intel CPUs - including the N100/N300 CPUs often used in telescope miniPCs).  On even a low-end N300 CPU (with a crummy iGPU) my benchmark test shows it as a 5x speedup.
+* Intel OpenVINO AI acceleration support added by @adaloveseal (this should allow **much** faster processing on AVX2/VNNI capable Intel CPUs - including the N100/N300 CPUs often used in telescope miniPCs).  On even a low-end N300 CPU (with a crummy iGPU) my benchmark test shows it as a 5x speedup.
 * GPU acceleration for AMD GPUs (a 15x speedup vs CPU processing: 15 minute runs (on a 16 core CPU) become 1 minute (using less than 1 core))
 * Failures in processing using GPU acceleration automatically failback to using the CPU instead and print a warning message to the logs.
 * In addition to the old package options, graxpert is now available on pypi for easy install with "pip install graxpert" on Windows, Mac-OS, or Linux.
+* An AppImage build is now available for Linux (as a prelude to eventual flatpak based distribution)
 * Fix a number of resource leaks while the app was running.
 * Previously most failures inside of graxpert would cause the app to appear to hang.  This is now fixed, the app will exit with an exception message instead.  Please report any failures you encounter by filing a github issue at FIXME.
 * The -cli command line flag is no longer required (but will be ignored if you still use it).  Just pass in command line arguments as you wish (see README.md for documentation)
