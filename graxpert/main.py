@@ -209,7 +209,7 @@ def ui_main(open_with_file=None):
 
 def parse_args(argv):
     """Parse command line arguments.
-    
+
     Args:
         argv: list of arguments to parse. If None, uses sys.argv[1:]
     """
@@ -396,27 +396,17 @@ def parse_args(argv):
 
     return args
 
-def api_run(argv, json_prefs: dict | None = None):
-    """Allows running GraXpert programmatically via an API call, passing commandline args as a list of strings
-    
+
+def main_impl(args, json_prefs: dict = {}):
+    """Shared main implementation for both commandline and API usage.
+
     Args:
-        argv: list of arguments to parse.
+        args: parsed arguments namespace.
         json_prefs: dictionary of preferences (following the documented JSON format), or None if not provided.
     """
 
-    try:        
-        # listing available versions might be slow, so only do it if we have command line args
-        if len(argv) > 0:
-            args = parse_args(argv)
-        else:
-            # Dummy noarg defs
-            args = types.SimpleNamespace(command=None, filename=None)
-
-        # Note: we wait to setup logging until after parsing args, so that --help response doesn't get log framing
-        configure_logging()
-
+    try:
         # Centralize our preference file loading here, though API users will probably just pass in a dict
-        json_prefs = None
         if args.preferences_file:
             preferences_file = os.path.abspath(args.preferences_file)
             if os.path.isfile(preferences_file):
@@ -451,11 +441,29 @@ def api_run(argv, json_prefs: dict | None = None):
             logging.info(f"Starting GraXpert UI, version: {graxpert_version} release: {graxpert_release}")
             ui_main(args.filename)
     finally:
-        temp_cleanup() 
+        temp_cleanup()
+
+
+def api_run(argv, json_prefs: dict = {}):
+    """Allows running GraXpert programmatically via an API call, passing commandline args as a list of strings
+
+    Args:
+        argv: list of arguments to parse.
+        json_prefs: dictionary of preferences (following the documented JSON format), or None if not provided.
+    """
+
+    # listing available versions might be slow, so only do it if we have command line args
+    if len(argv) > 0:
+        args = parse_args(argv)
+    else:
+        # Dummy noarg defs
+        args = types.SimpleNamespace(command=None, filename=None)
+
+    main_impl(args, json_prefs)
 
 def main():
     """Note: this is entered directly via the entry_point definition in setup.py or called from below
-    
+
     Args:
         argv: Optional list of arguments to parse. If None, uses sys.argv[1:]
     """
@@ -463,9 +471,19 @@ def main():
     multiprocessing.freeze_support()
     faulthandler.enable(sys.stderr)
     try:
-        api_run(sys.argv[1:])
+        # listing available versions might be slow, so only do it if we have command line args
+        if len(sys.argv) > 0:
+            args = parse_args(sys.argv[1:])
+        else:
+            # Dummy noarg defs
+            args = types.SimpleNamespace(command=None, filename=None)
 
-        logging.shutdown() 
+        # Note: we wait to setup logging until after parsing args, so that --help response doesn't get log framing
+        configure_logging()
+
+        main_impl(args)
+
+        logging.shutdown()
     except Exception as e:
         logging.exception(e)
         logging.shutdown()

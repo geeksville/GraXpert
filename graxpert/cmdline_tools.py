@@ -59,7 +59,7 @@ class BGECmdlineTool(CmdlineToolBase):
     def __init__(self, args):
         super().__init__(args)
 
-    def execute(self, json_prefs: dict | None = None):
+    def execute(self, json_prefs: dict = {}):
         astro_Image = AstroImage(do_update_display=False)
         astro_Image.set_from_file(self.args.filename, None, None)
 
@@ -74,28 +74,27 @@ class BGECmdlineTool(CmdlineToolBase):
         preferences = Prefs()
         preferences.interpol_type_option = "AI"
 
-        if json_prefs :
-            if "background_points" in json_prefs:
-                preferences.background_points = json_prefs["background_points"]
-            if "RBF_kernel" in json_prefs:
-                preferences.RBF_kernel = json_prefs["RBF_kernel"]
-            if "interpol_type_option" in json_prefs:
-                preferences.interpol_type_option = json_prefs["interpol_type_option"]
-            if "sm`oothing_option" in json_prefs:
-                preferences.smoothing_option = json_prefs["smoothing_option"]
-            if "sample_size" in json_prefs:
-                preferences.sample_size = json_prefs["sample_size"]
-            if "spline_order" in json_prefs:
-                preferences.spline_order = json_prefs["spline_order"]
-            if "corr_type" in json_prefs:
-                preferences.corr_type = json_prefs["corr_type"]
-            if "ai_version" in json_prefs:
-                preferences.ai_version = json_prefs["ai_version"]
-            if "ai_gpu_acceleration" in json_prefs:
-                preferences.ai_gpu_acceleration = json_prefs["ai_gpu_acceleration"]
+        if "background_points" in json_prefs:
+            preferences.background_points = json_prefs["background_points"]
+        if "RBF_kernel" in json_prefs:
+            preferences.RBF_kernel = json_prefs["RBF_kernel"]
+        if "interpol_type_option" in json_prefs:
+            preferences.interpol_type_option = json_prefs["interpol_type_option"]
+        if "sm`oothing_option" in json_prefs:
+            preferences.smoothing_option = json_prefs["smoothing_option"]
+        if "sample_size" in json_prefs:
+            preferences.sample_size = json_prefs["sample_size"]
+        if "spline_order" in json_prefs:
+            preferences.spline_order = json_prefs["spline_order"]
+        if "corr_type" in json_prefs:
+            preferences.corr_type = json_prefs["corr_type"]
+        if "ai_version" in json_prefs:
+            preferences.bge_ai_version = json_prefs["ai_version"]
+        if "ai_gpu_acceleration" in json_prefs:
+            preferences.ai_gpu_acceleration = json_prefs["ai_gpu_acceleration"]
 
-            if preferences.interpol_type_option == "Kriging" or preferences.interpol_type_option == "RBF":
-                downscale_factor = 4
+        if preferences.interpol_type_option == "Kriging" or preferences.interpol_type_option == "RBF":
+            downscale_factor = 4
 
         if self.args.smoothing is not None:
             preferences.smoothing_option = self.args.smoothing
@@ -208,7 +207,7 @@ class DenoiseCmdlineTool(CmdlineToolBase):
         super().__init__(args)
         self.args = args
 
-    def execute(self, json_prefs: dict | None = None):
+    def execute(self, json_prefs: dict = {}):
         astro_Image = AstroImage(do_update_display=False)
         astro_Image.set_from_file(self.args.filename, None, None)
 
@@ -217,15 +216,15 @@ class DenoiseCmdlineTool(CmdlineToolBase):
         processed_Astro_Image.fits_header = astro_Image.fits_header
 
         preferences = Prefs()
-        if json_prefs:
-            if "ai_version" in json_prefs:
-                preferences.ai_version = json_prefs["ai_version"]
-            if "denoise_strength" in json_prefs:
-                preferences.denoise_strength = json_prefs["denoise_strength"]
-            if "ai_batch_size" in json_prefs:
-                preferences.ai_batch_size = json_prefs["ai_batch_size"]
-            if "ai_gpu_acceleration" in json_prefs:
-                preferences.ai_gpu_acceleration = json_prefs["ai_gpu_acceleration"]
+
+        if "ai_version" in json_prefs:
+            preferences.ai_version = json_prefs["ai_version"]
+        if "denoise_strength" in json_prefs:
+            preferences.denoise_strength = json_prefs["denoise_strength"]
+        if "ai_batch_size" in json_prefs:
+            preferences.ai_batch_size = json_prefs["ai_batch_size"]
+        if "ai_gpu_acceleration" in json_prefs:
+            preferences.ai_gpu_acceleration = json_prefs["ai_gpu_acceleration"]
 
         if self.args.denoise_strength is not None:
             preferences.denoise_strength = self.args.denoise_strength
@@ -296,7 +295,7 @@ class DeconvObjCmdlineTool(CmdlineToolBase):
         super().__init__(args)
         self.args = args
 
-    def execute(self, json_prefs: dict | None = None):
+    def execute(self, json_prefs: dict = {}):
         astro_Image = AstroImage(do_update_display=False)
         astro_Image.set_from_file(self.args.filename, None, None)
 
@@ -305,17 +304,17 @@ class DeconvObjCmdlineTool(CmdlineToolBase):
         processed_Astro_Image.fits_header = astro_Image.fits_header
 
         preferences = Prefs()
-        if json_prefs:
-            if "ai_version" in json_prefs:
-                preferences.ai_version = json_prefs["ai_version"]
-            if "deconvolution_strength" in json_prefs:
-                preferences.deconvolution_strength = json_prefs["deconvolution_strength"]
-            if "deconvolution_psfsize" in json_prefs:
-                preferences.deconvolution_psfsize = json_prefs["deconvolution_psfsize"]
-            if "ai_batch_size" in json_prefs:
-                preferences.ai_batch_size = json_prefs["ai_batch_size"]
-            if "ai_gpu_acceleration" in json_prefs:
-                preferences.ai_gpu_acceleration = json_prefs["ai_gpu_acceleration"]
+
+        if "ai_version" in json_prefs:
+            preferences.ai_version = json_prefs["ai_version"]
+        if "deconvolution_strength" in json_prefs:
+            preferences.deconvolution_strength = json_prefs["deconvolution_strength"]
+        if "deconvolution_psfsize" in json_prefs:
+            preferences.deconvolution_psfsize = json_prefs["deconvolution_psfsize"]
+        if "ai_batch_size" in json_prefs:
+            preferences.ai_batch_size = json_prefs["ai_batch_size"]
+        if "ai_gpu_acceleration" in json_prefs:
+            preferences.ai_gpu_acceleration = json_prefs["ai_gpu_acceleration"]
 
         if self.args.deconvolution_strength is not None:
             preferences.deconvolution_strength = self.args.deconvolution_strength
@@ -400,7 +399,7 @@ class DeconvStellarCmdlineTool(CmdlineToolBase):
         super().__init__(args)
         self.args = args
 
-    def execute(self, json_prefs: dict | None = None):
+    def execute(self, json_prefs: dict = {}):
         astro_Image = AstroImage(do_update_display=False)
         astro_Image.set_from_file(self.args.filename, None, None)
 
@@ -409,17 +408,17 @@ class DeconvStellarCmdlineTool(CmdlineToolBase):
         processed_Astro_Image.fits_header = astro_Image.fits_header
 
         preferences = Prefs()
-        if json_prefs:
-            if "ai_version" in json_prefs:
-                preferences.ai_version = json_prefs["ai_version"]
-            if "deconvolution_strength" in json_prefs:
-                preferences.deconvolution_strength = json_prefs["deconvolution_strength"]
-            if "deconvolution_psfsize" in json_prefs:
-                preferences.deconvolution_psfsize = json_prefs["deconvolution_psfsize"]
-            if "ai_batch_size" in json_prefs:
-                preferences.ai_batch_size = json_prefs["ai_batch_size"]
-            if "ai_gpu_acceleration" in json_prefs:
-                preferences.ai_gpu_acceleration = json_prefs["ai_gpu_acceleration"]
+
+        if "ai_version" in json_prefs:
+            preferences.ai_version = json_prefs["ai_version"]
+        if "deconvolution_strength" in json_prefs:
+            preferences.deconvolution_strength = json_prefs["deconvolution_strength"]
+        if "deconvolution_psfsize" in json_prefs:
+            preferences.deconvolution_psfsize = json_prefs["deconvolution_psfsize"]
+        if "ai_batch_size" in json_prefs:
+            preferences.ai_batch_size = json_prefs["ai_batch_size"]
+        if "ai_gpu_acceleration" in json_prefs:
+            preferences.ai_gpu_acceleration = json_prefs["ai_gpu_acceleration"]
 
         if self.args.deconvolution_strength is not None:
             preferences.deconvolution_strength = self.args.deconvolution_strength
