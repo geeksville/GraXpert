@@ -32,6 +32,10 @@ from graxpert.stretch import StretchParameters, stretch_all
 from graxpert.ui.loadingframe import DynamicProgressThread
 
 
+def callback(p):
+    eventbus.emit(AppEvents.AI_DOWNLOAD_PROGRESS, {"progress": p})
+
+
 class GraXpert:
 
     def __init__(self):
@@ -674,8 +678,20 @@ class GraXpert:
             else:
                 eventbus.emit(AppEvents.AI_DOWNLOAD_BEGIN)
 
-                def callback(p):
-                    eventbus.emit(AppEvents.AI_DOWNLOAD_PROGRESS, {"progress": p})
+                download_version(bge_ai_models_dir, bge_bucket_name, self.prefs.bge_ai_version, progress=callback)
+                eventbus.emit(AppEvents.AI_DOWNLOAD_END)
+        return True
+        
+    def validate_bge_ai_installation(self):
+        if self.prefs.bge_ai_version is None or self.prefs.bge_ai_version == "None":
+            messagebox.showerror("Error", _("No Background Extraction AI-Model selected. Please select one from the Advanced panel on the right."))
+            return False
+
+        if not validate_local_version(bge_ai_models_dir, self.prefs.bge_ai_version):
+            if not messagebox.askyesno(_("Install AI-Model?"), _("Selected Background Extraction AI-Model is not installed. Should I download it now?")):
+                return False
+            else:
+                eventbus.emit(AppEvents.AI_DOWNLOAD_BEGIN)
 
                 download_version(bge_ai_models_dir, bge_bucket_name, self.prefs.bge_ai_version, progress=callback)
                 eventbus.emit(AppEvents.AI_DOWNLOAD_END)
@@ -695,9 +711,6 @@ class GraXpert:
                 else:
                     eventbus.emit(AppEvents.AI_DOWNLOAD_BEGIN)
 
-                    def callback(p):
-                        eventbus.emit(AppEvents.AI_DOWNLOAD_PROGRESS, {"progress": p})
-
                     download_version(deconvolution_object_ai_models_dir, deconvolution_object_bucket_name, self.prefs.deconvolution_object_ai_version, progress=callback)
                     eventbus.emit(AppEvents.AI_DOWNLOAD_END)
             return True
@@ -711,9 +724,6 @@ class GraXpert:
                     return False
                 else:
                     eventbus.emit(AppEvents.AI_DOWNLOAD_BEGIN)
-
-                    def callback(p):
-                        eventbus.emit(AppEvents.AI_DOWNLOAD_PROGRESS, {"progress": p})
 
                     download_version(deconvolution_stars_ai_models_dir, deconvolution_stars_bucket_name, self.prefs.deconvolution_stars_ai_version, progress=callback)
                     eventbus.emit(AppEvents.AI_DOWNLOAD_END)
@@ -729,9 +739,6 @@ class GraXpert:
                 return False
             else:
                 eventbus.emit(AppEvents.AI_DOWNLOAD_BEGIN)
-
-                def callback(p):
-                    eventbus.emit(AppEvents.AI_DOWNLOAD_PROGRESS, {"progress": p})
 
                 download_version(denoise_ai_models_dir, denoise_bucket_name, self.prefs.denoise_ai_version, progress=callback)
                 eventbus.emit(AppEvents.AI_DOWNLOAD_END)
