@@ -1,3 +1,4 @@
+import json
 import os
 import platform
 import sys
@@ -395,8 +396,13 @@ def parse_args(argv):
 
     return args
 
-def api_run(argv):
-    """Allows running GraXpert programmatically via an API call, passing commandline args as a list of strings"""
+def api_run(argv, json_prefs: dict | None = None):
+    """Allows running GraXpert programmatically via an API call, passing commandline args as a list of strings
+    
+    Args:
+        argv: list of arguments to parse.
+        json_prefs: dictionary of preferences (following the documented JSON format), or None if not provided.
+    """
 
     try:        
         # listing available versions might be slow, so only do it if we have command line args
@@ -409,36 +415,43 @@ def api_run(argv):
         # Note: we wait to setup logging until after parsing args, so that --help response doesn't get log framing
         configure_logging()
 
+        # Centralize our preference file loading here, though API users will probably just pass in a dict
+        json_prefs = None
+        if args.preferences_file:
+            preferences_file = os.path.abspath(args.preferences_file)
+            if os.path.isfile(preferences_file):
+                with open(preferences_file, "r") as f:
+                    json_prefs = json.load(f)
+
         if args.command == "background-extraction":
             from graxpert.cmdline_tools import BGECmdlineTool
 
             logging.info(f"Starting GraXpert CLI, Background-Extraction, version: {graxpert_version} release: {graxpert_release}")
             clt = BGECmdlineTool(args)
-            clt.execute()
+            clt.execute(json_prefs)
         elif args.command == "denoising":
             from graxpert.cmdline_tools import DenoiseCmdlineTool
 
             logging.info(f"Starting GraXpert CLI, Denoising, version: {graxpert_version} release: {graxpert_release}")
             clt = DenoiseCmdlineTool(args)
-            clt.execute()
+            clt.execute(json_prefs)
         elif args.command == "deconv-obj":
             from graxpert.cmdline_tools import DeconvObjCmdlineTool
 
             logging.info(f"Starting GraXpert CLI, Deconvolution Obj, version: {graxpert_version} release: {graxpert_release}")
             clt = DeconvObjCmdlineTool(args)
-            clt.execute()
+            clt.execute(json_prefs)
         elif args.command == "deconv-stellar":
             from graxpert.cmdline_tools import DeconvStellarCmdlineTool
 
             logging.info(f"Starting GraXpert CLI, Deconvolution Stellar, version: {graxpert_version} release: {graxpert_release}")
             clt = DeconvStellarCmdlineTool(args)
-            clt.execute()
+            clt.execute(json_prefs)
         else:
             logging.info(f"Starting GraXpert UI, version: {graxpert_version} release: {graxpert_release}")
             ui_main(args.filename)
     finally:
-        temp_cleanup()
-        logging.shutdown()  
+        temp_cleanup() 
 
 def main():
     """Note: this is entered directly via the entry_point definition in setup.py or called from below
@@ -449,8 +462,14 @@ def main():
 
     multiprocessing.freeze_support()
     faulthandler.enable(sys.stderr)
-    api_run(sys.argv[1:])
+    try:
+        api_run(sys.argv[1:])
 
+        logging.shutdown() 
+    except Exception as e:
+        logging.exception(e)
+        logging.shutdown()
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
