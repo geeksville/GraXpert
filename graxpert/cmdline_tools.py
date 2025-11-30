@@ -49,7 +49,9 @@ class CmdlineToolBase:
     def get_save_path(self):
         if self.args.output is not None:
             base_path = os.path.dirname(self.args.filename)
-            output_file_name = self.args.output + self.get_output_file_ending()
+            output_file_name = self.args.output
+            if not os.path.splitext(output_file_name)[1]: # if output file already has an extension, just use that
+                output_file_name += self.get_output_file_ending()
             return os.path.join(base_path, output_file_name)
         else:
             return os.path.splitext(self.args.filename)[0] + "_GraXpert" + self.get_output_file_ending()
