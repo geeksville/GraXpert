@@ -204,7 +204,12 @@ def ui_main(open_with_file=None):
     root.mainloop()
 
 
-def parse_args():
+def parse_args(argv):
+    """Parse command line arguments.
+    
+    Args:
+        argv: list of arguments to parse. If None, uses sys.argv[1:]
+    """
     available_bge_versions = collect_available_versions(bge_ai_models_dir, bge_bucket_name)
     available_denoise_versions = collect_available_versions(denoise_ai_models_dir, denoise_bucket_name)
     available_deconv_obj_versions = collect_available_versions(deconvolution_object_ai_models_dir, deconvolution_object_bucket_name)
@@ -362,42 +367,39 @@ def parse_args():
         help='Number of image tiles which Graxpert will denoise in parallel. Be careful: increasing this value might result in out-of-memory errors. Valid Range: 1..32, default: "4"',
     )
 
-    if "-h" in sys.argv or "--help" in sys.argv:
-        if "background-extraction" in sys.argv:
+    if "-h" in argv or "--help" in argv:
+        if "background-extraction" in argv:
             bge_parser.print_help()
-        elif "denoising" in sys.argv:
+        elif "denoising" in argv:
             denoise_parser.print_help()
-        elif "deconv-obj" in sys.argv:
+        elif "deconv-obj" in argv:
             deconv_obj_parser.print_help()
-        elif "deconv-stellar" in sys.argv:
+        elif "deconv-stellar" in argv:
             deconv_stellar_parser.print_help()
         else:
             parser.print_help()
         sys.exit(0)
 
-    args, extras = parser.parse_known_args()
+    args, extras = parser.parse_known_args(argv)
 
     if args.command == "background-extraction":
-        args = bge_parser.parse_args()
+        args = bge_parser.parse_args(argv)
     elif args.command == "deconv-obj":
-        args = deconv_obj_parser.parse_args()
+        args = deconv_obj_parser.parse_args(argv)
     elif args.command == "deconv-stellar":
-        args = deconv_stellar_parser.parse_args()
+        args = deconv_stellar_parser.parse_args(argv)
     elif args.command == "denoising":
-        args = denoise_parser.parse_args()
+        args = denoise_parser.parse_args(argv)
 
     return args
 
-def main():
-    """Note: this is entered directly via the entry_point definition in setup.py or called from below"""
+def api_run(argv):
+    """Allows running GraXpert programmatically via an API call, passing commandline args as a list of strings"""
 
-    multiprocessing.freeze_support()
-    faulthandler.enable(sys.__stderr__)
-
-    try:
+    try:        
         # listing available versions might be slow, so only do it if we have command line args
-        if len(sys.argv) > 1:
-            args = parse_args()
+        if len(argv) > 0:
+            args = parse_args(argv)
         else:
             # Dummy noarg defs
             args = types.SimpleNamespace(command=None, filename=None)
@@ -434,7 +436,18 @@ def main():
             ui_main(args.filename)
     finally:
         temp_cleanup()
-        logging.shutdown()        
+        logging.shutdown()  
+
+def main():
+    """Note: this is entered directly via the entry_point definition in setup.py or called from below
+    
+    Args:
+        argv: Optional list of arguments to parse. If None, uses sys.argv[1:]
+    """
+
+    multiprocessing.freeze_support()
+    faulthandler.enable(sys.stderr)
+    api_run(sys.argv[1:])
 
 
 if __name__ == "__main__":
