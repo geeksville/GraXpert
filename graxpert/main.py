@@ -194,7 +194,9 @@ def ui_main(open_with_file=None):
     app = ApplicationFrame(root)
     app.grid(column=0, row=0, sticky=tk.NSEW)
     root.update()
-    check_for_new_version()
+    # Turn off new version check because we will be switching to pypi based version checking
+    # (much faster - no 2 second pause on startup)
+    # check_for_new_version()
 
     if open_with_file and len(open_with_file) > 0:
         eventbus.emit(AppEvents.LOAD_IMAGE_REQUEST, {"filename": open_with_file})
