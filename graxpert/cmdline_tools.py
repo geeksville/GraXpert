@@ -82,7 +82,7 @@ class BGECmdlineTool(CmdlineToolBase):
             preferences.RBF_kernel = json_prefs["RBF_kernel"]
         if "interpol_type_option" in json_prefs:
             preferences.interpol_type_option = json_prefs["interpol_type_option"]
-        if "sm`oothing_option" in json_prefs:
+        if "smoothing_option" in json_prefs:
             preferences.smoothing_option = json_prefs["smoothing_option"]
         if "sample_size" in json_prefs:
             preferences.sample_size = json_prefs["sample_size"]
