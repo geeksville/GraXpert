@@ -104,7 +104,7 @@ def version_type(ai_models_dir, bucket_name, arg_value, pat=re.compile(r"^\d+\.\
 
 def ui_main(open_with_file=None):
     check_tk() # Must be before importing tkinter
-    
+
     import logging
     import tkinter as tk
     from concurrent.futures import ProcessPoolExecutor
@@ -460,7 +460,7 @@ def api_run(argv, json_prefs: dict = {}):
         args = parse_args(argv)
     else:
         # Dummy noarg defs
-        args = types.SimpleNamespace(command=None, filename=None)
+        args = types.SimpleNamespace(command=None, filename=None, preferences_file=None)
 
     main_impl(args, json_prefs)
 
@@ -475,11 +475,11 @@ def main():
     faulthandler.enable(sys.stderr)
     try:
         # listing available versions might be slow, so only do it if we have command line args
-        if len(sys.argv) > 0:
+        if len(sys.argv) > 1:
             args = parse_args(sys.argv[1:])
         else:
             # Dummy noarg defs
-            args = types.SimpleNamespace(command=None, filename=None)
+            args = types.SimpleNamespace(command=None, filename=None, preferences_file=None)
 
         # Note: we wait to setup logging until after parsing args, so that --help response doesn't get log framing
         configure_logging()
