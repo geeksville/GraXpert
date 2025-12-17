@@ -29,8 +29,7 @@ from graxpert.mp_logging import logfile_name
 from graxpert.preferences import fitsheader_2_app_state, load_preferences, prefs_2_app_state
 from graxpert.s3_secrets import bge_bucket_name, deconvolution_object_bucket_name, deconvolution_stars_bucket_name, denoise_bucket_name
 from graxpert.stretch import StretchParameters, stretch_all
-from graxpert.ui.loadingframe import DynamicProgressThread
-
+from graxpert.progress import DynamicProgressThread
 
 def callback(p):
     eventbus.emit(AppEvents.AI_DOWNLOAD_PROGRESS, {"progress": p})

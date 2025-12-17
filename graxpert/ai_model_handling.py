@@ -18,7 +18,7 @@ except Exception as e:
     logging.exception(e)
     client = None
 
-from graxpert.ui.loadingframe import DynamicProgressThread
+from graxpert.progress import DynamicProgressThread
 
 ai_models_dir = os.path.join(user_data_dir(appname="GraXpert"), "ai-models")
 bge_ai_models_dir = os.path.join(user_data_dir(appname="GraXpert"), "bge-ai-models")

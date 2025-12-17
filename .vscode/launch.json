@@ -19,7 +19,9 @@
                 "background-extraction",
                 "-output",
                 "testout",
-                "tests/test_images/real_crummy.fits",
+                "-gpu",
+                "false",
+                "tests/test_images/color_16bit.fits",
             ],
             "justMyCode": true
         }        

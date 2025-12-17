@@ -18,20 +18,21 @@ import types
 
 from packaging import version
 
-# Must be before all other graxpert imports
-try:
-    # A load-time check for key external package dependencies. Crash and warn user.
-    import tkinter
-except ImportError:
-    # If it fails, print a helpful message and exit.
-    print("ERROR: The required 'tkinter' GUI library is not installed.", file=sys.stderr)
-    print("\nPlease install it using your system's package manager.", file=sys.stderr)
-    print("  For Debian/Ubuntu: sudo apt-get install python3-tk", file=sys.stderr)
-    print("  For Fedora:        sudo dnf install python3-tkinter", file=sys.stderr)
-    print("  For Arch Linux:    sudo pacman -S tk", file=sys.stderr)
-    print("  For OS-X:          brew install python-tk", file=sys.stderr)
-    print("  For Windows:       It should be included with your Python installation by default.", file=sys.stderr)
-    sys.exit(1) # Exit with error
+def check_tk():
+    # Must be before all other graxpert imports
+    try:
+        # A load-time check for key external package dependencies. Crash and warn user.
+        import tkinter
+    except ImportError:
+        # If it fails, print a helpful message and exit.
+        print("ERROR: The required 'tkinter' GUI library is not installed.", file=sys.stderr)
+        print("\nPlease install it using your system's package manager.", file=sys.stderr)
+        print("  For Debian/Ubuntu: sudo apt-get install python3-tk", file=sys.stderr)
+        print("  For Fedora:        sudo dnf install python3-tkinter", file=sys.stderr)
+        print("  For Arch Linux:    sudo pacman -S tk", file=sys.stderr)
+        print("  For OS-X:          brew install python-tk", file=sys.stderr)
+        print("  For Windows:       It should be included with your Python installation by default.", file=sys.stderr)
+        sys.exit(1) # Exit with error
 
 
 from graxpert.ai_model_handling import bge_ai_models_dir, denoise_ai_models_dir, deconvolution_object_ai_models_dir, deconvolution_stars_ai_models_dir, list_local_versions, list_remote_versions
@@ -102,6 +103,8 @@ def version_type(ai_models_dir, bucket_name, arg_value, pat=re.compile(r"^\d+\.\
 
 
 def ui_main(open_with_file=None):
+    check_tk() # Must be before importing tkinter
+    
     import logging
     import tkinter as tk
     from concurrent.futures import ProcessPoolExecutor
