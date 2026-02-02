@@ -9,6 +9,7 @@ author_full = f"{author_name} <{author_email}>"
 
 onnxruntime_cuda = "onnxruntime-gpu[cuda,cudnn]==1.22.0"
 onnxruntime_rocm = "onnxruntime-rocm==1.22.1" # the runtime that goes with rocm 7.0.1
+onnxruntime_migraphx = "onnxruntime-migraphx==1.23.2"
 onnxruntime_openvino = "onnxruntime-openvino==1.22.0"
 onnxruntime_cpuonly = "onnxruntime>=1.22.1"
 
@@ -77,6 +78,7 @@ setup_options = {
         # out of requirements.txt).  Users will need to pick one at install time.
         "cuda": [onnxruntime_cuda], # FIXME test this on osx - it might be fine ; sys_platform != 'darwin'
         "rocm": [onnxruntime_rocm],
+        "migraphx": [onnxruntime_migraphx],
         "directml": ["onnxruntime-directml"],
         "openvino": [onnxruntime_openvino,
                      "openvino>=2025.3.0"],  # per https://onnxruntime.ai/docs/execution-providers/OpenVINO-ExecutionProvider.html#requirements
@@ -214,7 +216,7 @@ if cx_freeze_commands.intersection(sys.argv):
         # build_options["excludes"] += ["onnxruntime", "onnxruntime-rocm", "onnxruntime-gpu"]
         # build_options["includes"] += ["onnxruntime-directml"]
     else:
-        build_options["excludes"] += ["onnxruntime-gpu", "onnxruntime-rocm", "onnxruntime-directml"]
+        build_options["excludes"] += ["onnxruntime-gpu", "onnxruntime-rocm", "onnxruntime-migraphx", "onnxruntime-directml"]
         build_options["includes"] += ["onnxruntime"]
 
     # console allows passing in command line

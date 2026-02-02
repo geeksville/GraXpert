@@ -182,6 +182,8 @@ def get_execution_providers_ordered(gpu_acceleration=True):
                     "device_type": "AUTO:GPU,CPU", # Will prefer dGPU, fallback to iGPU, NPU or CPU with extra Intel specific optimizations
                 }
             ),
+            # If either is on with the latest AMD drivers segfault happens
+            "MIGraphXExecutionProvider",
             "ROCMExecutionProvider",
             "DmlExecutionProvider",
             (

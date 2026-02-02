@@ -35,7 +35,14 @@ fi
 
 # NOTE! If using rocm you must uninstall onnxruntime-gpu and THEN install from the rocm repo
 # NOTE! rocm support only seems to be enabled currently in Ubuntu, not bare Debian!
-pip3 uninstall -y --break-system-packages onnxruntime onnxruntime-gpu onnxruntime-rocm
+# https://repo.radeon.com/rocm/manylinux/rocm-rel-7.2/onnxruntime_migraphx-1.23.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl
+pip3 uninstall -y --break-system-packages onnxruntime onnxruntime-gpu onnxruntime-rocm onnxruntime-migraphx
 # switching to the rocm runtime apparently requires **removing** the onnxruntime package (which came from a different repo?)
-pip3 install --user --force --break-system-packages --no-warn-script-location numpy==2.2.6 onnxruntime-rocm==1.22.1 -f https://repo.radeon.com/rocm/manylinux/rocm-rel-7.0/
+
+# migraphx is supposedly the 'new' AMD API but it crashes with a sefault on my linux machine
+pip3 install --user --force --break-system-packages --no-warn-script-location numpy==2.2.6 onnxruntime-migraphx==1.23.2 -f https://repo.radeon.com/rocm/manylinux/rocm-rel-7.2/
+
+# This is the old rocm runtime
+# pip3 install --user --force --break-system-packages --no-warn-script-location numpy==2.2.6 onnxruntime-rocm==1.22.1 -f https://repo.radeon.com/rocm/manylinux/rocm-rel-7.0/
+
 pip3 cache purge
