@@ -129,7 +129,7 @@ jobs:
           "deconvolution_stars_bucket_name = `"$env:ai_s3_deconvolution_stars_bucket_name`"" | Out-File -Append .\graxpert\s3_secrets.py
       - name: install dependencies
         run: |
-          pip install setuptools wheel cx_freeze==7.2.3
+          pip install setuptools wheel "cx_Freeze>=8.6"
           pip install onnxruntime-directml
           pip install -r requirements.txt
       - name: patch version

@@ -153,12 +153,20 @@ if cx_freeze_commands.intersection(sys.argv):
 
     msi_summary_data = {"author": author_name, "comments": author_email}
 
+    # cx_Freeze 8.6 removed bdist_msi "target_name" (and "target_version") in
+    # favour of "output_name"/"product_name"/"product_version", see
+    # https://cx-freeze.readthedocs.io/en/stable/bdist_msi.html
+
+    # "product_name" replaces the old "target_name" for the installer
+    # metadata/product name. "output_name" is left at its default
+    # ("{product_name}-{product_version}-{platform}.msi"), which yields
+    # e.g. "GraXpert-3.x-win64.msi" matching the CI artifact glob.
     bdist_msi_options = {
         "add_to_path": True,
         "data": msi_data,
         "summary_data": msi_summary_data,
         "upgrade_code": "{d0ba2b1d-e18e-42c9-9ded-beb9cadad494}",
-        "target_name": "GraXpert",
+        "product_name": "GraXpert",
         "install_icon": "./img/Icon.ico",
     }
 
