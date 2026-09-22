@@ -47,7 +47,7 @@
 
 		// It is handy to have some test images available in the container
 		// "source=${localEnv:HOME}/Pictures/telescope,target=/images,type=bind,consistency=cached",
-		"source=/mnt/kshared,target=/mnt/kshared,type=bind,consistency=cached",
+		"source=/mnt/pool/big/kevinh/telescope,target=/mnt/kshared,type=bind,consistency=cached",
 
 		// This is necessary to prevent newer vscode created images from being able to write to /tmp
 		"type=tmpfs,destination=/tmp,tmpfs-mode=1777",

@@ -2,5 +2,7 @@
     "black-formatter.args": [
         "--line-length",
         "200"
-    ]
+    ],
+    "python.languageServer": "None",
+    "python.analysis.typeCheckingMode": "off"
 }

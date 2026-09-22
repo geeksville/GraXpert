@@ -14,3 +14,4 @@ graxpert.egg-info
 testimage.fit*
 .DS_Store
 settings.py
+graxpert-env/
