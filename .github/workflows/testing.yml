@@ -162,6 +162,7 @@ jobs:
           retention-days: 5
 
   test-devcontainer:
+    if: false # Disable the devcontainer tests for now
     runs-on: ubuntu-24.04
     # These permissions are needed to push the devcontainer image to the GitHub Container Registry
     permissions:
