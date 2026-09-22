@@ -6,7 +6,7 @@ astropy-iers-data>=0.2025.9.1.0.42.11
 customtkinter>=5.2.2
 imageio>=2.37.0
 minio>=7.2.16
-numpy>=2.0.2,<=2.2.6
+numpy>=2.5.0
 opencv-python-headless==4.11.0.86
 PyKrige>=1.7.2
 requests>=2.32.5
